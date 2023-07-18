@@ -1,0 +1,7 @@
+name: MagiaPrro
+main: org.magiaperro.main.Main
+version: 1.20.1
+commands:
+  givecustomitem:
+    description: Descripción del comando
+    usage: /givecustomitem
