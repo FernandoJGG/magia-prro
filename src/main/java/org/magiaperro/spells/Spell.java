@@ -6,13 +6,13 @@ import org.bukkit.entity.Player;
 public class Spell {
     private int manaCost;
     private int cooldown;
-    private String id;
+    private SpellID id;
     private String name;
     private String description;
     private Material material;
     private SpellEffect spellEffect;
 
-    public Spell(int manaCost, int cooldown, String id, String name, String description, Material material, SpellEffect spellEffect) {
+    public Spell(int manaCost, int cooldown, SpellID id, String name, String description, Material material, SpellEffect spellEffect) {
         this.manaCost = manaCost;
         this.cooldown = cooldown;
         this.id = id;
@@ -33,7 +33,7 @@ public class Spell {
         return cooldown;
     }
 
-    public String getId() {
+    public SpellID getId() {
         return id;
     }
 

@@ -11,8 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
@@ -48,7 +48,7 @@ public class Main extends JavaPlugin implements Listener {
                 Player player = (Player) sender;
                 
                 // Crear una instancia de CustomItem
-                ItemStack varita = ItemRegistry.getCustomItem("varita_nieve").buildItemStack();
+                ItemStack varita = ItemRegistry.getCustomItem(ItemID.Varita).buildItemStack();
                 
                 // Entregar el item personalizado al jugador
                 player.getInventory().addItem(varita);
@@ -67,14 +67,27 @@ public class Main extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-        	ItemStack itemOnHand = player.getInventory().getItemInMainHand();
-        	String metadata = itemOnHand.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.STRING);
-        	if (metadata != null) {
-	        	CustomItem itemType = ItemRegistry.getCustomItem(metadata);
-	        	if(itemType instanceof IClickable) {
-		        	((IClickable) itemType).onRightClick(event);
-	        	}
+        	IClickable clickableMainHand = hasClickableOnHand(player, EquipmentSlot.HAND);
+        	if(clickableMainHand != null) {
+        		clickableMainHand.onRightClick(event, EquipmentSlot.HAND);
+        	}
+        	else {
+        		IClickable clickableOffHand = hasClickableOnHand(player, EquipmentSlot.OFF_HAND);
+            	if(clickableOffHand != null) {
+            		clickableOffHand.onRightClick(event, EquipmentSlot.OFF_HAND);
+            	}
         	}
         }
+    }
+    
+    private IClickable hasClickableOnHand(Player player, EquipmentSlot hand) {
+    	ItemStack itemOnHand = player.getInventory().getItem(hand);
+    	CustomItem itemType = CustomItem.fromItemStack(itemOnHand);
+    	if (itemType != null) {
+        	if(itemType instanceof IClickable) {
+	        	return (IClickable) itemType;
+        	}
+    	}
+    	return null;
     }
 }

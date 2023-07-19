@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.magiaperro.items.interfaces.IClickable;
 
 import java.util.List;
@@ -11,13 +12,13 @@ import java.util.List;
 public class Varita2 extends CustomItem implements IClickable {
 	
 	
-    public Varita2(String id, String itemName, Material material, List<String> lore) {
+    public Varita2(ItemID id, String itemName, Material material, List<String> lore) {
 		super(id, itemName, material, lore);
 	}
 
 
     // Manejar la acción al darle click derecho al item
-    public void onRightClick(PlayerInteractEvent event) {
+    public void onRightClick(PlayerInteractEvent event, EquipmentSlot hand) {
         Player player = event.getPlayer();
 
 	    // Crear una instancia de la bola de fuego

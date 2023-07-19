@@ -3,8 +3,6 @@ package org.magiaperro.items;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
-import org.magiaperro.main.Keys;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,9 +15,9 @@ public class CustomItem {
     private String itemName;
     private Material material;
     private List<String> lore;
-    private String id;
+    private ItemID id;
 
-    public CustomItem(String id, String itemName, Material material, List<String> lore) {
+    public CustomItem(ItemID id, String itemName, Material material, List<String> lore) {
         this.itemName = itemName;
         this.material = material;
         this.lore = lore;
@@ -40,7 +38,7 @@ public class CustomItem {
         return lore;
     }
 
-    public String getId() {
+    public ItemID getId() {
         return id;
     }
 
@@ -55,11 +53,16 @@ public class CustomItem {
                 .decoration(TextDecoration.BOLD, true));
         itemMeta.lore(this.lore.stream().map(x -> Component.text(x)).toList());
         
-        itemMeta.getPersistentDataContainer().set(Keys.CUSTOM_ITEM_ID, PersistentDataType.STRING, this.id);
+        itemMeta.setCustomModelData(id.getIndex());
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
-
-    // Agrega aquí cualquier lógica adicional o acciones especiales para el item customizado
+    
+    public static CustomItem fromItemStack(ItemStack itemStack) {
+    	if(itemStack.hasCustomModelData())
+    		return ItemRegistry.getCustomItem(itemStack.getCustomModelData());
+    	else
+    		return null;
+    }
 }
