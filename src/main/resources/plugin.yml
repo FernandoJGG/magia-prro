@@ -3,6 +3,6 @@ main: org.magiaperro.main.Main
 version: 1.0
 api-version: 1.13
 commands:
-  givecustomitem:
-    description: Descripción del comando
-    usage: /givecustomitem
+  example:
+    description: Un comando de ejemplo
+    usage: /example

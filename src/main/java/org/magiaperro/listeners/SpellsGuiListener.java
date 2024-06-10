@@ -7,6 +7,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.magiaperro.gui.SpellsGui;
 
 public class SpellsGuiListener implements Listener {
+	
+	//TODO: Revamp. Este listener esta escuchando a TODOS los eventos de inventario, no solo a los de SpellsGui.
+	
     private SpellsGui spellsGui;
 
     public SpellsGuiListener() {
