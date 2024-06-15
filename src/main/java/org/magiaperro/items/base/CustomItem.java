@@ -45,7 +45,7 @@ public class CustomItem {
         return id;
     }
 
-    public ItemStack buildItemStack() {
+    public ItemStack buildItemStack(int amount) {
         ItemStack itemStack = new ItemStack(material);
 
         // Personalizar las propiedades del item
@@ -55,12 +55,17 @@ public class CustomItem {
                 .color(NamedTextColor.YELLOW)
                 .decoration(TextDecoration.BOLD, true));
         itemMeta.lore(this.lore.stream().map(x -> Component.text(x)).toList());
-        
         itemMeta.setCustomModelData(id.getIndex());
         itemMeta.getPersistentDataContainer().set(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER, id.getIndex());
 
         itemStack.setItemMeta(itemMeta);
+        itemStack.setAmount(amount);
+        
         return itemStack;
+    }
+
+    public ItemStack buildItemStack() {
+        return buildItemStack(1);
     }
     
     public static CustomItem fromItemStack(ItemStack itemStack) {
@@ -76,10 +81,18 @@ public class CustomItem {
     	
     	Integer id = itemMeta.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER);
     	if(id != null) {
-    		return ItemRegistry.getCustomItem(id);
+    		return fromId(id);
     	}
     	else {
     		return null;
     	}
+    }
+    
+    public static CustomItem fromId(ItemID itemId) {
+    	return ItemRegistry.getCustomItem(itemId);
+    }
+    
+    public static CustomItem fromId(int id) {
+    	return ItemRegistry.getCustomItem(id);
     }
 }

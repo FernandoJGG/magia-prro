@@ -35,10 +35,14 @@ public class ItemRegistry {
     }
     
     public static CustomItem getCustomItem(ItemID itemId) {
-        return customItems.get(itemId);
+    	if (customItems.containsKey(itemId))
+            return customItems.get(itemId);
+    	else 
+    		return null;
     }
     
-    public static CustomItem getCustomItem(int itemId) {
-        return customItems.get(ItemID.getByIndex(itemId));
+    public static CustomItem getCustomItem(int id) {
+    	ItemID itemId = ItemID.getByIndex(id);
+        return getCustomItem(itemId);
     }
 }

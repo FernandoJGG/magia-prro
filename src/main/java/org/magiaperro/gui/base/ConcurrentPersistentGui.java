@@ -2,9 +2,11 @@ package org.magiaperro.gui.base;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.magiaperro.gui.base.factories.ConcurrentGuiFactory;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
@@ -32,11 +34,9 @@ public class ConcurrentPersistentGui extends PersistentGui {
 		try {
 			synchronized (inventoryCache) {
 	            if (inventoryCache.containsKey(guid)) {
-	            	Bukkit.getLogger().info("Se recupera inventario");
 	            	ConcurrentPersistentGui inventory = inventoryCache.get(guid);
 	                return inventory;
 	            } else {
-	            	Bukkit.getLogger().info("Se instancia clase");
 	            	ConcurrentPersistentGui inventory = factory.createGui(guid);
 	            	inventoryCache.put(guid, inventory);
 	                return inventory;
@@ -52,18 +52,35 @@ public class ConcurrentPersistentGui extends PersistentGui {
 		}
 	}
 	
+	public static ConcurrentPersistentGui getInventoryHolderFromGuid(UUID guid) {
+		if(inventoryCache.containsKey(guid)) {
+			return inventoryCache.get(guid);
+		}
+		return null;
+	}
+	
 	@Override
 	public void handleCloseEvent(InventoryCloseEvent event) {
-        synchronized (inventoryCache) {
-        	Bukkit.getLogger().info("Se cierra inventario");
-        	if (this.getInventory().getViewers().size() <= 1) {
-            	Bukkit.getLogger().info("Se guarda inventario");
-                this.getSaveStrategy().save(this);
-                inventoryCache.remove(this.inventoryGuid);
-            }
-        }
+		try {
+	        synchronized (inventoryCache) {
+	        	if (this.getViewers().size() <= 1) {
+	                this.getSaveStrategy().save(this);
+	                inventoryCache.remove(this.inventoryGuid);
+	            }
+	        }
+		}
+		catch(Exception e) {
+			Bukkit.getLogger().severe("Error al instanciar inventario concurrente"
+					+ "\nClase:" + this.getClass().getName()
+					+ "\nGUID:" + this.inventoryGuid
+					+ "\nExcepcion:" + e);
+			throw e;
+		}
     }
-
+	
+	public List<HumanEntity> getViewers() {
+		return this.getInventory().getViewers();
+	}
 
 
 }

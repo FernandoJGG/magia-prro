@@ -6,6 +6,7 @@ import org.magiaperro.commands.base.BaseCommand;
 import org.magiaperro.items.*;
 import org.magiaperro.listeners.OnPlayerInteractListener;
 import org.magiaperro.listeners.InventoryListener;
+import org.magiaperro.listeners.OnDestroyListener;
 import org.magiaperro.spells.SpellRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,16 +17,19 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Se ejecuta cuando el plugin se habilita (se carga)
-        getLogger().info("El plugin MediterraneaRPG se ha habilitado.");
-
         instance = this;
+        
         ItemRegistry.register();
         SpellRegistry.register();
         CommandRegistry.register();
         BlockRegistry.register();
         
+        this.registerListeners();
+    }
+    
+    public void registerListeners() {
         getServer().getPluginManager().registerEvents(new OnPlayerInteractListener(), this);    
+        getServer().getPluginManager().registerEvents(new OnDestroyListener(), this);    
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
     }
 

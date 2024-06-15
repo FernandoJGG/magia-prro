@@ -3,10 +3,9 @@ package org.magiaperro.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.InventoryHolder;
 import org.magiaperro.commands.base.BaseCommand;
-import org.magiaperro.items.ItemRegistry;
-import org.magiaperro.items.base.ItemID;
+import org.magiaperro.gui.CustomInventoryHolder;
 
 public class ExampleCommand extends BaseCommand {
 
@@ -17,14 +16,10 @@ public class ExampleCommand extends BaseCommand {
     @Override
     public boolean execute(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
-        
-        // Crear una instancia de CustomItem
-        ItemStack varita = ItemRegistry.getCustomItem(ItemID.Varita).buildItemStack();
-        
-        // Entregar el item personalizado al jugador
-        player.getInventory().addItem(varita);
-       
-        sender.sendMessage("Has recibido un item personalizado.");
+
+    	InventoryHolder a = new CustomInventoryHolder();
+    	player.openInventory(a.getInventory());
+    	
         return true;
     }
 }

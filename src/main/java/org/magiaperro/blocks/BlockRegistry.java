@@ -5,13 +5,14 @@ import java.util.Map;
 
 import org.magiaperro.blocks.base.BlockID;
 import org.magiaperro.blocks.base.CustomBlock;
+import org.magiaperro.items.base.ItemID;
 
 public class BlockRegistry {
     public static final Map<BlockID, CustomBlock> customBlocks = new HashMap<>();
 
     @SuppressWarnings("unused")
 	public static void register() {
-    	CustomCrafter crafter = new CustomCrafter(BlockID.CustomCrafter);
+    	CustomCrafter crafter = new CustomCrafter(BlockID.CustomCrafter, ItemID.CustomCrafter);
     }
     
     public static void registerCustomBlock(CustomBlock customBlock) {
@@ -19,10 +20,14 @@ public class BlockRegistry {
     }
     
     public static CustomBlock getCustomBlock(BlockID blockId) {
-        return customBlocks.get(blockId);
+    	if (customBlocks.containsKey(blockId))
+            return customBlocks.get(blockId);
+    	else 
+    		return null;
     }
     
-    public static CustomBlock getCustomBlock(int blockId) {
-        return customBlocks.get(BlockID.getByIndex(blockId));
+    public static CustomBlock getCustomBlock(int id) {
+    	BlockID blockId = BlockID.getByIndex(id);
+    	return getCustomBlock(blockId);
     }
 }
