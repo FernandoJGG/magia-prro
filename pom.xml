@@ -5,70 +5,72 @@
   <version>0.0.1-SNAPSHOT</version>
   
   <repositories>
-	<repository>
-	    <id>purpur</id>
-	    <url>https://repo.purpurmc.org/snapshots</url>
-	</repository>
-	<repository>
-	    <id>jeff-media-public</id>
-	    <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
-	</repository>
+    <repository>
+        <id>purpur</id>
+        <name>Purpur Maven Repo</name>
+        <url>https://repo.purpurmc.org/snapshots</url>
+    </repository>
+    <repository>
+        <id>jeff-media-public</id>
+        <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
+    </repository>
   </repositories>
   
   <dependencies>
-	<dependency>
-	    <groupId>org.purpurmc.purpur</groupId>
-	    <artifactId>purpur-api</artifactId>
-	    <version>1.20.1-R0.1-SNAPSHOT</version>
-	    <scope>provided</scope>
-	</dependency>
-	<dependency>
-	    <groupId>com.jeff_media</groupId>
-	    <artifactId>MorePersistentDataTypes</artifactId>
-	    <version>2.4.0</version>
-	    <scope>compile</scope>
-	</dependency>	
+    <dependency>
+        <groupId>org.purpurmc.purpur</groupId>
+        <artifactId>purpur-api</artifactId>
+        <version>1.20.6-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.jeff_media</groupId>
+        <artifactId>MorePersistentDataTypes</artifactId>
+        <version>2.4.0</version>
+        <scope>compile</scope>
+    </dependency>    
   </dependencies>
   
   <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-   <build>
+  </properties>
+  
+  <build>
         <defaultGoal>clean package</defaultGoal>
         <finalName>MagiaPrro</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version> <!-- Actualiza la versión del plugin aquí -->
                 <configuration>
-                    <source>16</source>
-                    <target>16</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
-		    <plugin>
-		      <groupId>org.apache.maven.plugins</groupId>
-		      <artifactId>maven-shade-plugin</artifactId>
-		      <version>3.5.0</version>
-		      <configuration>
-		        <relocations>
-		          <relocation>
-		            <pattern>com.jeff_media.morepersistentdatatypes</pattern>
-		            <shadedPattern>org.magiaperro.morepersistentdatatypes</shadedPattern>
-		          </relocation>
-		        </relocations>
-		      </configuration>
-		      <executions>
-		        <execution>
-		          <phase>package</phase>
-		          <goals>
-		            <goal>shade</goal>
-		          </goals>
-		        </execution>
-		      </executions>
-		    </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-shade-plugin</artifactId>
+              <version>3.5.0</version>
+              <configuration>
+                <relocations>
+                  <relocation>
+                    <pattern>com.jeff_media.morepersistentdatatypes</pattern>
+                    <shadedPattern>org.magiaperro.morepersistentdatatypes</shadedPattern>
+                  </relocation>
+                </relocations>
+              </configuration>
+              <executions>
+                <execution>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>shade</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -76,5 +78,5 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-    </build>
+  </build>
 </project>
