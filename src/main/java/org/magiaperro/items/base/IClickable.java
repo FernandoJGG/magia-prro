@@ -1,4 +1,4 @@
-package org.magiaperro.items.interfaces;
+package org.magiaperro.items.base;
 
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;

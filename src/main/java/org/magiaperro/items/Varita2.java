@@ -5,7 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.magiaperro.items.interfaces.IClickable;
+import org.magiaperro.items.base.CustomItem;
+import org.magiaperro.items.base.IClickable;
+import org.magiaperro.items.base.ItemID;
 
 import java.util.List;
 

@@ -3,6 +3,7 @@ package org.magiaperro.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.magiaperro.commands.base.BaseCommand;
 import org.magiaperro.main.Main;
 
 public class CommandRegistry {
@@ -13,6 +14,8 @@ public class CommandRegistry {
 	public static void register() {
 		// Registra los comandos
 		ExampleCommand ejemploComando = new ExampleCommand();
+		BackpackCommand backpack = new BackpackCommand();
+		GiveCustomCommand giveCustom = new GiveCustomCommand();
 	}
     
     public static void registerCommand(BaseCommand command) {

@@ -1,10 +1,11 @@
 package org.magiaperro.main;
 
-import org.magiaperro.commands.BaseCommand;
+import org.magiaperro.blocks.BlockRegistry;
 import org.magiaperro.commands.CommandRegistry;
+import org.magiaperro.commands.base.BaseCommand;
 import org.magiaperro.items.*;
 import org.magiaperro.listeners.OnPlayerInteractListener;
-import org.magiaperro.listeners.SpellsGuiListener;
+import org.magiaperro.listeners.InventoryListener;
 import org.magiaperro.spells.SpellRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,9 +23,10 @@ public class Main extends JavaPlugin {
         ItemRegistry.register();
         SpellRegistry.register();
         CommandRegistry.register();
+        BlockRegistry.register();
         
         getServer().getPluginManager().registerEvents(new OnPlayerInteractListener(), this);    
-        getServer().getPluginManager().registerEvents(new SpellsGuiListener(), this);
+        getServer().getPluginManager().registerEvents(new InventoryListener(), this);
     }
 
     @Override

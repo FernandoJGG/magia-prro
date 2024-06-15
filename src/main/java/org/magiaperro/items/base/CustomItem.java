@@ -1,8 +1,11 @@
-package org.magiaperro.items;
+package org.magiaperro.items.base;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.magiaperro.items.ItemRegistry;
+import org.magiaperro.main.Keys;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -54,15 +57,29 @@ public class CustomItem {
         itemMeta.lore(this.lore.stream().map(x -> Component.text(x)).toList());
         
         itemMeta.setCustomModelData(id.getIndex());
+        itemMeta.getPersistentDataContainer().set(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER, id.getIndex());
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
     
     public static CustomItem fromItemStack(ItemStack itemStack) {
-    	if(itemStack.hasCustomModelData())
-    		return ItemRegistry.getCustomItem(itemStack.getCustomModelData());
-    	else
+    	if (itemStack == null) {
     		return null;
+    	}
+    	
+    	ItemMeta itemMeta = itemStack.getItemMeta();
+    	if (itemMeta == null) {
+    		// No estoy seguro de si puede ser null, pero por si aca
+    		return null;
+    	}
+    	
+    	Integer id = itemMeta.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER);
+    	if(id != null) {
+    		return ItemRegistry.getCustomItem(id);
+    	}
+    	else {
+    		return null;
+    	}
     }
 }

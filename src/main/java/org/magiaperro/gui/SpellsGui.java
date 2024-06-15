@@ -1,77 +1,66 @@
 package org.magiaperro.gui;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.magiaperro.gui.base.BaseGui;
+import org.magiaperro.gui.base.GuiGraphic;
 import org.magiaperro.items.Varita;
-import org.magiaperro.spells.Spell;
-import org.magiaperro.spells.SpellID;
 import org.magiaperro.spells.SpellRegistry;
+import org.magiaperro.spells.base.Spell;
+import org.magiaperro.spells.base.SpellID;
 
 import net.kyori.adventure.text.Component;
 
-public class SpellsGui implements InventoryHolder {
-	private Inventory inventory;
+public class SpellsGui extends BaseGui {
 
-	@SuppressWarnings("deprecation")
 	public SpellsGui() {
-		inventory = Bukkit.createInventory(this, 9, "Hechizos"); // Tamaño del inventario (9) y título
-
-		// Agrega los elementos y opciones a tu inventario
+		super(27,Component.text("Hechizos"));
+		
+		List<GuiGraphic> graphics = new ArrayList<>();
+		graphics.add(new GuiGraphic (
+			/*Material*/ 	Material.GLASS_PANE,
+			/*Slots*/ 		new int[] {0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26},
+			/*Text*/ 		Component.text("")
+		));
+		
 		Collection<Spell> spells = SpellRegistry.spells.values();
+		
+		int i = 0;
 		for (Spell spell : spells) {
-			Material material = spell.getMaterial();
-			String name = spell.getName();
+			final SpellID spellId = spell.getId();
+			graphics.add(new GuiGraphic (
+				/*Material*/ 	spell.getMaterial(),
+				/*Slots*/ 		new int[] {i+9},
+				/*Text*/ 		Component.text(spell.getName()),
+				/*Lore*/ 		Component.text(spell.getDescription()),
+				/*Function*/ 	(event) -> this.selectSpell(event, spellId)
+			));
 
-			ItemStack itemStack = new ItemStack(material);
-			ItemMeta itemMeta = itemStack.getItemMeta();
-			itemMeta.displayName(Component.text(name));
-			itemMeta.setCustomModelData(spell.getId().getIndex());
-			itemStack.setItemMeta(itemMeta);
-
-			inventory.addItem(itemStack);
-		}
-	}
-
-	public void openInterface(Player player) {
-		player.openInventory(inventory);
-	}
-
-	@Override
-	public Inventory getInventory() {
-		return inventory;
-	}
-
-	public void handleClickEvent(InventoryClickEvent event) {
-		Player player = (Player) event.getWhoClicked();
-
-		if (event.getInventory().getHolder() instanceof SpellsGui) {
-			event.setCancelled(true); 
-			
-			if (event.getClickedInventory().getHolder() instanceof SpellsGui) {
-				ItemStack clickedItem = event.getCurrentItem();
-				if (clickedItem != null) {
-					SpellID spellId = SpellID.getByIndex(clickedItem.getCustomModelData());
-					Varita.selectSpell(spellId, player);
-				}
+			i++;
+			if(i > 9) {
+				break;
 			}
 		}
+
+		this.DrawGui(graphics.toArray(new GuiGraphic[graphics.size()]));
+	}
+
+	public void selectSpell(InventoryClickEvent event, SpellID spellId) {
+		Player player = (Player) event.getWhoClicked();
+		Varita.selectSpell(spellId, player);
 	}
 
 	// Maneja el evento de cierre del inventario
+	@Override
 	public void handleCloseEvent(InventoryCloseEvent event) {
-		// Verificar si el evento se produjo en tu interfaz
-		if (event.getInventory().getHolder() instanceof SpellsGui) {
-			// Realiza la lógica correspondiente al cerrar la interfaz, si es necesario
-			event.getPlayer().sendMessage("Cerrado menú");
-		}
+		super.handleCloseEvent(event);
+		Bukkit.getLogger().info("Cerrado menú de hechizos");
 	}
 }

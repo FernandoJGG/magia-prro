@@ -1,4 +1,4 @@
-package org.magiaperro.spells;
+package org.magiaperro.spells.base;
 
 import java.util.Random;
 

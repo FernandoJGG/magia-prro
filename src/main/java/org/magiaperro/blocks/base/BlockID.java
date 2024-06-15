@@ -1,13 +1,11 @@
-package org.magiaperro.spells;
+package org.magiaperro.blocks.base;
 
-public enum SpellID {
-	Fireball(0),
-	Snowball(1),
-	GoldenApple(2);
+public enum BlockID {
+	CustomCrafter(0);
 	
 	private final int index;
 
-    private SpellID(int index) {
+    private BlockID(int index) {
         this.index = index;
     }
 
@@ -15,8 +13,8 @@ public enum SpellID {
         return index;
     }
     
-    public static SpellID getByIndex(int index) {
-        for (SpellID element : SpellID.values()) {
+    public static BlockID getByIndex(int index) {
+        for (BlockID element : BlockID.values()) {
             if (element.getIndex() == index) {
                 return element;
             }

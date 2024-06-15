@@ -1,14 +1,14 @@
-package org.magiaperro.commands;
+package org.magiaperro.commands.base;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.magiaperro.commands.CommandRegistry;
 
 public abstract class BaseCommand {
-
-    protected final String name;
-    protected final String description;
-    protected final String usage;
+    public final String name;
+    public final String description;
+    public final String usage;
     
     protected String permission;
     protected Boolean playerOnly = true;

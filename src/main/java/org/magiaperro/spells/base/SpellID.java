@@ -1,12 +1,14 @@
-package org.magiaperro.items;
+package org.magiaperro.spells.base;
 
-public enum ItemID {
-	Varita(0),
-	Varita2(1);
+public enum SpellID {
+	Fireball(0),
+	Snowball(1),
+	GoldenApple(2),
+	BombaAtomica(3);
 	
 	private final int index;
 
-    private ItemID(int index) {
+    private SpellID(int index) {
         this.index = index;
     }
 
@@ -14,8 +16,8 @@ public enum ItemID {
         return index;
     }
     
-    public static ItemID getByIndex(int index) {
-        for (ItemID element : ItemID.values()) {
+    public static SpellID getByIndex(int index) {
+        for (SpellID element : SpellID.values()) {
             if (element.getIndex() == index) {
                 return element;
             }

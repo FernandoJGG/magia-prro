@@ -4,8 +4,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.magiaperro.items.ItemID;
+import org.magiaperro.commands.base.BaseCommand;
 import org.magiaperro.items.ItemRegistry;
+import org.magiaperro.items.base.ItemID;
 
 public class ExampleCommand extends BaseCommand {
 

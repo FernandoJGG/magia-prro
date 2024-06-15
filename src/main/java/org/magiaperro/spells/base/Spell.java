@@ -1,7 +1,8 @@
-package org.magiaperro.spells;
+package org.magiaperro.spells.base;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.magiaperro.spells.SpellRegistry;
 
 public class Spell {
     private int manaCost;

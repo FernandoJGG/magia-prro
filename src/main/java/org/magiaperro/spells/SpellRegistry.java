@@ -6,6 +6,10 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Snowball;
 import org.bukkit.potion.PotionEffectType;
+import org.magiaperro.spells.base.BasePotionSpell;
+import org.magiaperro.spells.base.BaseProjectileSpell;
+import org.magiaperro.spells.base.Spell;
+import org.magiaperro.spells.base.SpellID;
 import org.bukkit.potion.PotionEffect;
 
 import org.bukkit.entity.Fireball;
@@ -38,5 +42,8 @@ public class SpellRegistry {
 				new BasePotionSpell(
 						new PotionEffect[] { new PotionEffect(PotionEffectType.ABSORPTION, 400, 2, false, false),
 								new PotionEffect(PotionEffectType.REGENERATION, 400, 2, false, false) }));
+
+		Spell AtomicBombSpell = new Spell(0, 0, SpellID.BombaAtomica, "Bomba atómica", "pum", Material.TNT,
+				new AtomicBombSpell());
 	}
 }
