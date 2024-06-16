@@ -108,12 +108,12 @@ public abstract class BaseGui implements InventoryHolder {
 
 	public void handleCloseEvent(InventoryCloseEvent event) { }
 	
-	public List<ItemStack> getItemStacksFromPositions(int[] positions) {
+	public ItemStack[] getItemStacksFromPositions(int[] positions) {
         List<ItemStack> itemStacks = new ArrayList<>();
         for (int position : positions) {
             ItemStack itemStack = inventory.getItem(position);
             itemStacks.add(itemStack);
         }
-        return itemStacks;
+        return itemStacks.toArray(new ItemStack[itemStacks.size()]);
     }
 }

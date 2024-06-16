@@ -39,7 +39,6 @@ public class BackpackCommand extends BaseCommand {
         );
         backpack.openInterface(player);
         
-        sender.sendMessage("Has recibido un item personalizado.");
         return true;
     }
 }

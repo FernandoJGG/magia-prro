@@ -6,8 +6,10 @@ import org.magiaperro.commands.base.BaseCommand;
 import org.magiaperro.items.*;
 import org.magiaperro.listeners.OnPlayerInteractListener;
 import org.magiaperro.listeners.InventoryListener;
-import org.magiaperro.listeners.OnDestroyListener;
+import org.magiaperro.listeners.BlockDisappearListener;
+import org.magiaperro.listeners.BlockPlaceListener;
 import org.magiaperro.spells.SpellRegistry;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,8 +31,9 @@ public class Main extends JavaPlugin {
     
     public void registerListeners() {
         getServer().getPluginManager().registerEvents(new OnPlayerInteractListener(), this);    
-        getServer().getPluginManager().registerEvents(new OnDestroyListener(), this);    
+        getServer().getPluginManager().registerEvents(new BlockDisappearListener(), this);    
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
     }
 
     @Override

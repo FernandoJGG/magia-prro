@@ -1,7 +1,5 @@
 package org.magiaperro.gui.base.strategies;
 
-import java.util.List;
-
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -27,9 +25,9 @@ public class PDCSaveStrategy implements SaveStrategy {
 	
 	@Override
 	public void save(PersistentGui persistentGui) {
-		List<ItemStack> items = persistentGui.getItemStacksFromPositions(persistentGui.persistentSlots);
-		if(items != null && items.size()>0) {
-			pdc.set(this.pdcKey, DataType.ITEM_STACK_ARRAY, items.toArray(new ItemStack[items.size()]));
+		ItemStack[] items = persistentGui.getPersistedItems();
+		if(items != null && items.length>0) {
+			pdc.set(this.pdcKey, DataType.ITEM_STACK_ARRAY, items);
 		}
 		
 	}

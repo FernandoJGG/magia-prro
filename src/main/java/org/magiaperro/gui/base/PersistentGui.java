@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
 
 import net.kyori.adventure.text.Component;
@@ -58,6 +59,10 @@ public class PersistentGui extends BaseGui {
 	}
 	public SaveStrategy getSaveStrategy() {
 		return saveStrategy;
+	}
+	
+	public ItemStack[] getPersistedItems() {
+		return this.getItemStacksFromPositions(persistentSlots);
 	}
 	
 	public void save() {

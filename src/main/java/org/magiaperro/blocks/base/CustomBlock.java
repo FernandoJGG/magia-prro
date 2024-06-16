@@ -4,14 +4,12 @@ import java.util.UUID;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.magiaperro.blocks.BlockRegistry;
 import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.ItemID;
 import org.magiaperro.main.Keys;
 
-import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import com.jeff_media.morepersistentdatatypes.DataType;
 
 public class CustomBlock {
@@ -57,21 +55,8 @@ public class CustomBlock {
     	return BlockRegistry.getCustomBlock(blockId);
     }
     
-    public void onDestroy(BlockDestroyEvent event) {
-    	Block block = event.getBlock();
-
-    	event.setWillDrop(false);
-    	this.dropBlock(block);
-    }
-    
-    public void onBreak(BlockBreakEvent event) {
-    	Block block = event.getBlock();
-    	
-    	event.setDropItems(false);
-    	this.dropBlock(block);
-    }
-    
-    public void dropBlock(Block block) {
+    public void onBlockDisappear(TileState tileState) {
+    	Block block = tileState.getBlock();
     	CustomItem itemBlock = CustomItem.fromId(this.itemBlockId);
     	
     	block.getWorld().dropItemNaturally(block.getLocation(), itemBlock.buildItemStack());

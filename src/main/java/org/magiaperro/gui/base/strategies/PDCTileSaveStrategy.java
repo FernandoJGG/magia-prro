@@ -19,8 +19,10 @@ public class PDCTileSaveStrategy extends PDCSaveStrategy {
 	
 	@Override
 	public void save(PersistentGui persistentGui) {
+		//TODO: Pasarle la GUID. comprobar si el bloque colocado tiene la misma GUID.
+		//if(this.tileState.getBlock())
 		super.save(persistentGui);
-		this.tileState.update(true, false);
+		this.tileState.update(false, false); // false force para no actualizar si se destruye (es suficiente? o se puede reemplazar por otro vanilla?)
 	}
 
 }

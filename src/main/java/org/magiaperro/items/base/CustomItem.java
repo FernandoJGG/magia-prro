@@ -69,19 +69,24 @@ public class CustomItem {
     }
     
     public static CustomItem fromItemStack(ItemStack itemStack) {
+    	ItemID itemId = getIdFromItemStack(itemStack);
+    	if(itemId != null) {
+    		return fromId(itemId);
+    	}
+    	else {
+    		return null;
+    	}
+    }
+    
+    public static ItemID getIdFromItemStack(ItemStack itemStack) {
     	if (itemStack == null) {
     		return null;
     	}
     	
     	ItemMeta itemMeta = itemStack.getItemMeta();
-    	if (itemMeta == null) {
-    		// No estoy seguro de si puede ser null, pero por si aca
-    		return null;
-    	}
-    	
-    	Integer id = itemMeta.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER);
-    	if(id != null) {
-    		return fromId(id);
+    	if (itemMeta != null && itemMeta.getPersistentDataContainer().has(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER)) {
+        	Integer id = itemMeta.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.INTEGER);
+        	return ItemID.getByIndex(id);
     	}
     	else {
     		return null;
