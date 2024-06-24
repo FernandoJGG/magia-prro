@@ -11,7 +11,7 @@ import com.jeff_media.morepersistentdatatypes.DataType;
 
 public class PDCSaveStrategy implements SaveStrategy {
 
-	private PersistentDataContainer pdc;
+	protected PersistentDataContainer pdc;
 	protected NamespacedKey pdcKey = Keys.PERSISTED_INVENTORY;
 	
 	public PDCSaveStrategy(PersistentDataContainer pdc) {

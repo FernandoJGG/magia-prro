@@ -2,11 +2,13 @@ package org.magiaperro.gui.base;
 
 import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
+import org.magiaperro.main.Main;
 
 import net.kyori.adventure.text.Component;
 
@@ -15,6 +17,7 @@ public class PersistentGui extends BaseGui {
 
 	public int[] persistentSlots;
 	private SaveStrategy saveStrategy;
+	private PlaceItemFunction onPlaceItem;
 	
 	public PersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy saveStrategy) {
 		super(size, title);
@@ -23,7 +26,8 @@ public class PersistentGui extends BaseGui {
 		
 		this.load();
 	}
-	public PersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy saveStrategy, GuiGraphic[] graphics) {
+	public PersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy saveStrategy, 
+			GuiGraphic[] graphics) {
 		super(size, title);
 		this.persistentSlots = persistentSlots;
 		this.saveStrategy = saveStrategy;
@@ -34,8 +38,14 @@ public class PersistentGui extends BaseGui {
 
 	@Override
 	public void handleClickEvent(InventoryClickEvent event) {
-		if(!isPersistentSlot(event.getRawSlot())) {
+		boolean isPersistent = isPersistentSlot(event.getRawSlot());
+		if(!isPersistent) {
 			super.handleClickEvent(event);
+		}
+		else if(this.onPlaceItem != null && isPersistent){
+			Bukkit.getScheduler().runTask(Main.instance, () -> {
+	            this.onPlaceItem.onPlace();
+	        });
 		}
 	}
 	
@@ -47,11 +57,22 @@ public class PersistentGui extends BaseGui {
                 return;
             }
         }
+
+		if(this.onPlaceItem != null && event.getRawSlots().stream().anyMatch(x-> isPersistentSlot(x))){
+			this.onPlaceItem.onPlace();
+			Bukkit.getScheduler().runTask(Main.instance, () -> {
+	            this.onPlaceItem.onPlace();
+	        });
+		}
 	}
 	
 	@Override
 	public void handleCloseEvent(InventoryCloseEvent event) {
 		this.save();
+	}
+	
+	public void setListener(PlaceItemFunction onPlaceItem) {
+		this.onPlaceItem = onPlaceItem;
 	}
 	
 	public boolean isPersistentSlot(int slot) {

@@ -12,7 +12,7 @@ import org.magiaperro.main.Keys;
 
 import com.jeff_media.morepersistentdatatypes.DataType;
 
-public class CustomBlock {
+public abstract class CustomBlock {
 
 	private BlockID id;
 	protected ItemID itemBlockId;
@@ -27,6 +27,16 @@ public class CustomBlock {
 	public BlockID getId() {
 		return id;
 	}
+	
+    /**
+     * Instancia un bloque custom con sus atributos en el PDC
+     */
+	public void instantiateBlock(TileState tileState) {
+    	tileState.getPersistentDataContainer().set(Keys.CUSTOM_BLOCK_ID, PersistentDataType.INTEGER, this.id.ordinal());
+    	tileState.getPersistentDataContainer().set(Keys.BLOCK_INSTANCE_GUID, DataType.UUID , UUID.randomUUID());
+    	
+    	tileState.update(false, false);
+	}
     
     public static CustomBlock fromTileState(TileState tileState) {
     	if(tileState != null && tileState.getPersistentDataContainer().has(Keys.CUSTOM_BLOCK_ID, PersistentDataType.INTEGER)) {
@@ -38,14 +48,6 @@ public class CustomBlock {
     	}
     }
     
-    public static UUID getGuidFromTileState(TileState tileState) {
-    	if (tileState == null) {
-    		return null;
-    	}
-    	
-		UUID guid = tileState.getPersistentDataContainer().get(Keys.BLOCK_INSTANCE_GUID, DataType.UUID);
-    	return guid;
-    }
     
     public static CustomBlock fromId(BlockID blockId) {
     	return BlockRegistry.getCustomBlock(blockId);
@@ -61,5 +63,6 @@ public class CustomBlock {
     	
     	block.getWorld().dropItemNaturally(block.getLocation(), itemBlock.buildItemStack());
     }
+
 
 }

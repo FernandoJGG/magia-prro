@@ -14,6 +14,7 @@ public class Keys {
     
 	//Bloques
 	public static final NamespacedKey BLOCK_INSTANCE_GUID = new NamespacedKey(Main.instance, "block_instance_guid");
+	public static final NamespacedKey BLOCK_OPERATION_FINISH_TIME = new NamespacedKey(Main.instance, "block_operation_finish_time");
 	
 	//String metadata = itemOnHand.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.STRING);
     //itemMeta.getPersistentDataContainer().set(Keys.CUSTOM_ITEM_ID, PersistentDataType.STRING, this.id);

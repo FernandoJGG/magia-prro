@@ -4,7 +4,11 @@ public enum ItemID {
 	Varita(0),
 	Varita2(1),
 	CustomCrafter(2),
-	CustomCrafter2(3);
+	CustomCrafter2(3),
+	CofreMagico(4),
+	AlloyFurnace(5),
+	BronzeIngot(6),
+	LeadOre(7);
 	
 	private final int index;
 

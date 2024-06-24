@@ -1,7 +1,9 @@
 package org.magiaperro.blocks.base;
 
 public enum BlockID {
-	CustomCrafter(0);
+	CustomCrafter(0),
+	CofreMagico(1),
+	AlloyFurnace(2);
 	
 	private final int index;
 

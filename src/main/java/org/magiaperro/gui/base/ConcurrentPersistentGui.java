@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.factories.ConcurrentGuiFactory;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
 
@@ -32,16 +33,15 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	
 	public static ConcurrentPersistentGui getInventoryHolder(ConcurrentGuiFactory factory, UUID guid) {
 		try {
-			synchronized (inventoryCache) {
-	            if (inventoryCache.containsKey(guid)) {
-	            	ConcurrentPersistentGui inventory = inventoryCache.get(guid);
-	                return inventory;
-	            } else {
-	            	ConcurrentPersistentGui inventory = factory.createGui(guid);
-	            	inventoryCache.put(guid, inventory);
-	                return inventory;
-	            }
-			}
+			//Segun he leido, bukkit es single-thread, por lo que realmente no es necesario hacer un bloque synchronized.
+			if (inventoryCache.containsKey(guid)) {
+            	ConcurrentPersistentGui inventory = inventoryCache.get(guid);
+                return inventory;
+            } else {
+            	ConcurrentPersistentGui inventory = factory.createGui(guid);
+            	inventoryCache.put(guid, inventory);
+                return inventory;
+            }
 		}
 		catch(Exception e) {
 			Bukkit.getLogger().severe("Error al instanciar inventario concurrente"
@@ -62,12 +62,10 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	@Override
 	public void handleCloseEvent(InventoryCloseEvent event) {
 		try {
-	        synchronized (inventoryCache) {
-	        	if (this.getViewers().size() <= 1) {
-	                this.getSaveStrategy().save(this);
-	                inventoryCache.remove(this.inventoryGuid);
-	            }
-	        }
+			if (this.getViewers().size() <= 1) {
+                this.getSaveStrategy().save(this);
+                inventoryCache.remove(this.inventoryGuid);
+            }
 		}
 		catch(Exception e) {
 			Bukkit.getLogger().severe("Error al instanciar inventario concurrente"
@@ -80,6 +78,10 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	
 	public List<HumanEntity> getViewers() {
 		return this.getInventory().getViewers();
+	}
+	
+	public void setPersistibleSlot(ItemStack item, int index) {
+		this.getInventory().setItem(this.persistentSlots[index], item);
 	}
 
 

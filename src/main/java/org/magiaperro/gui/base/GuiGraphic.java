@@ -14,7 +14,7 @@ public class GuiGraphic {
 		this.text = text;
 	}
 
-	public GuiGraphic(Material material, int[] slots, Component text, List<Component> lore, GuiButton funcion) {
+	public GuiGraphic(Material material, int[] slots, Component text, List<Component> lore, IGuiButton funcion) {
 		this.material = material;
 		this.slots = slots;
 		this.text = text;
@@ -22,7 +22,7 @@ public class GuiGraphic {
 		this.funcion = funcion;
 	}
 	
-	public GuiGraphic(Material material, int[] slots, Component text, Component lore, GuiButton funcion) {
+	public GuiGraphic(Material material, int[] slots, Component text, Component lore, IGuiButton funcion) {
 		this.material = material;
 		this.slots = slots;
 		this.text = text;
@@ -35,5 +35,5 @@ public class GuiGraphic {
 	public Component text;
 	public List<Component> lore;
 	
-	public GuiButton funcion;
+	public IGuiButton funcion;
 }

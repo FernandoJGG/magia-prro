@@ -100,4 +100,25 @@ public class CustomItem {
     public static CustomItem fromId(int id) {
     	return ItemRegistry.getCustomItem(id);
     }
+    
+    public static boolean isCustomItem(ItemStack itemStack, ItemID customItemId) {
+    	ItemID itemId = getIdFromItemStack(itemStack);
+    	if(itemId != null && itemStack != null) {
+    		return itemId.equals(customItemId);
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
+    public static boolean isVanillaItem(ItemStack itemStack, Material material) {
+    	ItemID itemId = getIdFromItemStack(itemStack);
+    	if(itemId != null || itemStack == null) {
+    		return false;
+    	}
+    	else {
+    		Material itemMaterial = itemStack.getType();
+    		return itemMaterial.equals(material);
+    	}
+    }
 }

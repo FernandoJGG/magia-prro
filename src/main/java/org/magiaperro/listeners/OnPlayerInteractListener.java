@@ -23,19 +23,22 @@ public class OnPlayerInteractListener implements Listener {
         EquipmentSlot[] hands = new EquipmentSlot[]{EquipmentSlot.HAND,  EquipmentSlot.OFF_HAND};
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
-        	if(!player.isSneaking()) {
-        		Block block = event.getClickedBlock();
-        		if(block != null && block.getState() != null && block.getState() instanceof TileState) {
-        			TileState tilestate = (TileState) block.getState();
-                	IBlockClickable clickedBlock = this.getClickableBlock(tilestate);
-                	if (clickedBlock != null) {
-                		clickedBlock.onRightClick(event, tilestate);
-                        event.setCancelled(true);
-                		return;
-                	}
-        		}
-        	}
+        	Block block = event.getClickedBlock();
+    		if(block != null && block.getState() != null && block.getState() instanceof TileState) {
+    			TileState tilestate = (TileState) block.getState();
+            	IBlockClickable clickedBlock = this.getClickableBlock(tilestate);
+            	if (clickedBlock != null) {
+            		if(!player.isSneaking()) {
+	            		clickedBlock.onRightClick(event, tilestate);
+	                    event.setCancelled(true);
+	            		return;
+            		}
+            		else if(!event.isBlockInHand()) {
+	                    event.setCancelled(true);
+	            		return;
+            		}
+            	}
+    		}
     		
         	for(EquipmentSlot hand : hands) {
         		IClickable clickedItem = this.getClickableOnHand(player, hand);

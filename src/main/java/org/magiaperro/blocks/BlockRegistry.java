@@ -5,14 +5,15 @@ import java.util.Map;
 
 import org.magiaperro.blocks.base.BlockID;
 import org.magiaperro.blocks.base.CustomBlock;
-import org.magiaperro.items.base.ItemID;
 
 public class BlockRegistry {
     public static final Map<BlockID, CustomBlock> customBlocks = new HashMap<>();
 
     @SuppressWarnings("unused")
 	public static void register() {
-    	CustomCrafter crafter = new CustomCrafter(BlockID.CustomCrafter, ItemID.CustomCrafter);
+    	CustomCrafter crafter = new CustomCrafter(BlockID.CustomCrafter);
+    	CofreMagico cofreMagico = new CofreMagico(BlockID.CofreMagico);
+    	AlloyFurnace horno = new AlloyFurnace(BlockID.AlloyFurnace);
     }
     
     public static void registerCustomBlock(CustomBlock customBlock) {

@@ -12,12 +12,12 @@ import org.magiaperro.items.base.ItemID;
 
 import net.kyori.adventure.text.Component;
 
-public class CustomCrafter extends InventoryBlock {
+public class CofreMagico extends InventoryBlock {
 
-	public static final int size = 9;
+	public static final int size = 27;
 	
-	public CustomCrafter(BlockID id) {
-		super(id, ItemID.CustomCrafter, size);
+	public CofreMagico(BlockID id) {
+		super(id, ItemID.CofreMagico, size);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class CustomCrafter extends InventoryBlock {
 		ConcurrentPersistentGui gui = CustomChest.getInventoryHolder(
 			new CustomChestGuiFactory(
 		     	/* Size */		size, 
-		      	/* Title */		Component.text("Crafter que no craftea"), 
+		      	/* Title */		Component.text("El kfre mágico"), 
 		    	/* tileState */	tileState
 		    ),
 			getGuidFromTileState(tileState)

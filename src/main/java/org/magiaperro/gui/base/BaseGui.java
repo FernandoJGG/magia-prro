@@ -21,7 +21,7 @@ import net.kyori.adventure.text.Component;
 
 public abstract class BaseGui implements InventoryHolder {
 	protected Inventory inventory;
-    public Map<Integer, GuiButton> botones = new HashMap<>();
+    public Map<Integer, IGuiButton> botones = new HashMap<>();
 	
 	protected int size;
 	protected Component title;
@@ -34,7 +34,7 @@ public abstract class BaseGui implements InventoryHolder {
 	
 	protected void DrawGui(GuiGraphic[] graphics) {
 		this.botones = new HashMap<>();
-		inventory.clear();
+//		inventory.clear();
 		for(GuiGraphic graphic: graphics) {
             ItemStack itemStack = createItemStack(graphic);
 

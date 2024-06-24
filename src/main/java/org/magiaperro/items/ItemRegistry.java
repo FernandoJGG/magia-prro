@@ -27,6 +27,17 @@ public class ItemRegistry {
         PlaceableItem customCrafter2 = new PlaceableItem(ItemID.CustomCrafter2, "Krfter prron 2", 
         		Material.PLAYER_HEAD, Arrays.asList("Crafteador perrón que aún no craftea"), 
         		BlockID.CustomCrafter);
+        PlaceableItem cofreMagico = new PlaceableItem(ItemID.CofreMagico, "Kfre majiko", 
+        		Material.ENCHANTING_TABLE, Arrays.asList("Un cofre que le da su magia al prro"), 
+        		BlockID.CofreMagico);
+        PlaceableItem horno = new PlaceableItem(ItemID.AlloyFurnace, "Horno de aleación", 
+        		Material.FURNACE, Arrays.asList("Un horno que hace aleaciones :V"), 
+        		BlockID.AlloyFurnace);
+        
+        CustomItem bronzeIngot = new CustomItem(ItemID.BronzeIngot, "Lingote de bronce", 
+        		Material.COPPER_INGOT, Arrays.asList()); 
+        CustomItem leadOre = new CustomItem(ItemID.LeadOre, "Mena de estaño", 
+                		Material.RAW_IRON, Arrays.asList());
 
     }
     
