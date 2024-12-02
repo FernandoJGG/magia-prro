@@ -35,9 +35,10 @@ public class PDCSaveStrategy implements SaveStrategy {
 	@Override
 	public void load(PersistentGui persistentGui) {
 		ItemStack[] items = pdc.get(this.pdcKey, DataType.ITEM_STACK_ARRAY);
+		int[] persistentSlots = persistentGui.getPersistentSlots();
 		if(items != null && items.length>0) {
-			for(int i=0;i < Math.min(items.length, persistentGui.persistentSlots.length);i++) {
-				persistentGui.getInventory().setItem(persistentGui.persistentSlots[i], items[i]);
+			for(int i=0;i < Math.min(items.length, persistentSlots.length);i++) {
+				persistentGui.getInventory().setItem(persistentSlots[i], items[i]);
 			}
 		}
 	}

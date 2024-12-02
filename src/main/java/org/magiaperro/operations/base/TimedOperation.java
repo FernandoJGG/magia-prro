@@ -2,6 +2,9 @@ package org.magiaperro.operations.base;
 
 import java.time.Instant;
 
+// Una operacion que termina en un instante de tiempo determinado
+// Notar que si se pausa y se reaunuda ya completa, se saltan todos los continueFunction intermedios
+// Por lo que en bloques las acciones de continueFunction solo deben ser esteticos (particulas, sonidos, etc)
 public class TimedOperation extends BaseOperation {
 
     protected OperationFunction finishFunction;
@@ -14,6 +17,7 @@ public class TimedOperation extends BaseOperation {
 		this.finishFunction = finishFunction;
 		this.finishInstant = finishInstant;
 	}
+// Comentado porque se mueve la responsabilidad a la propia entidad de manejar su descarga
 //    public static boolean onLoad(TileState tileState, IOperationFunction cont, IOperationFunction finish) {
 //        return onLoad(tileState, cont, finish, Keys.BLOCK_FINISH_OPERATION_TIME, Keys.BLOCK_INSTANCE_GUID);
 //    }

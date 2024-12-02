@@ -45,5 +45,9 @@ public class SpellRegistry {
 
 		Spell AtomicBombSpell = new Spell(0, 0, SpellID.BombaAtomica, "Bomba atómica", "pum", Material.TNT,
 				new AtomicBombSpell());
+		
+
+		Spell ExplosiveArrow = new Spell(0, 0, SpellID.FlechaExplosiva, "Flecha explosiva", "pum", Material.ARROW,
+				new BombArrow());
 	}
 }

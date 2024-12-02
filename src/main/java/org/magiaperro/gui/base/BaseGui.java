@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -71,6 +72,11 @@ public abstract class BaseGui implements InventoryHolder {
 	}
 
 	public void handleClickEvent(InventoryClickEvent event) {
+		// Si intentan mover items a la GUI se cancela
+		if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+			event.setCancelled(true);
+			return;
+		}
 		// Si se hace click en el inventario del jugador se ignora
 		if (event.getRawSlot() >= inventory.getSize()) {
             return;

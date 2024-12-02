@@ -1,48 +1,78 @@
 package org.magiaperro.gui.base;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
+import org.magiaperro.helpers.InventoryHelper;
 import org.magiaperro.main.Main;
 
 import net.kyori.adventure.text.Component;
 
 
 public class PersistentGui extends BaseGui {
-
-	public int[] persistentSlots;
-	private SaveStrategy saveStrategy;
+    private final int[] inputSlots;
+    private final int[] outputSlots;
+	private final SaveStrategy saveStrategy;
 	private PlaceItemFunction onPlaceItem;
 	
-	public PersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy saveStrategy) {
+	public PersistentGui(int size, Component title, int[] inputSlots, SaveStrategy saveStrategy) {
 		super(size, title);
-		this.persistentSlots = persistentSlots;
+		this.inputSlots = inputSlots;
+		this.saveStrategy = saveStrategy;
+		this.outputSlots = new int[0];
+		
+		this.load();
+	}
+	
+	public PersistentGui(int size, Component title, int[] inputSlots, int[] outputSlots, SaveStrategy saveStrategy) {
+		super(size, title);
+		this.inputSlots = inputSlots;
+		this.outputSlots = outputSlots;
 		this.saveStrategy = saveStrategy;
 		
 		this.load();
 	}
-	public PersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy saveStrategy, 
+	
+	public PersistentGui(int size, Component title, int[] inputSlots, int[] outputSlots, SaveStrategy saveStrategy, 
 			GuiGraphic[] graphics) {
-		super(size, title);
-		this.persistentSlots = persistentSlots;
-		this.saveStrategy = saveStrategy;
+		this(size, title, inputSlots, outputSlots, saveStrategy);
 		this.DrawGui(graphics);
-
-		this.load();
+//		super(size, title);
+//		this.inputSlots = inputSlots;
+//		this.saveStrategy = saveStrategy;
+//		this.DrawGui(graphics);
+//		this.outputSlots = new int[0];
+//
+//		this.load();
 	}
 
 	@Override
 	public void handleClickEvent(InventoryClickEvent event) {
+		// Permitimos mover objetos del inventario del jugador a la GUI
+		// Cuidado: No se comprueba el tipo del slot destino
+		// TODO: Evitar mover a slots no input
+		if (event.getRawSlot() >= inventory.getSize() && 
+				event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+			return;
+		}
+        
 		boolean isPersistent = isPersistentSlot(event.getRawSlot());
 		if(!isPersistent) {
 			super.handleClickEvent(event);
 		}
 		else if(this.onPlaceItem != null && isPersistent){
+			// No deja colocar objetos en slots de output
+			if(InventoryHelper.isPutAction(event.getAction())
+					&& isOutputSlot(event.getRawSlot())) {
+	        	event.setCancelled(true);
+	        }
 			Bukkit.getScheduler().runTask(Main.instance, () -> {
 	            this.onPlaceItem.onPlace();
 	        });
@@ -52,13 +82,13 @@ public class PersistentGui extends BaseGui {
 	@Override
 	public void handleDragEvent(InventoryDragEvent event) {
 		for (int slot : event.getRawSlots()) {
-            if (slot < inventory.getSize() && !isPersistentSlot(slot)) {
+            if (slot < inventory.getSize() && !isInputSlot(slot)) {
                 event.setCancelled(true);
                 return;
             }
         }
 
-		if(this.onPlaceItem != null && event.getRawSlots().stream().anyMatch(x-> isPersistentSlot(x))){
+		if(this.onPlaceItem != null && event.getRawSlots().stream().anyMatch(x-> isInputSlot(x))){
 			this.onPlaceItem.onPlace();
 			Bukkit.getScheduler().runTask(Main.instance, () -> {
 	            this.onPlaceItem.onPlace();
@@ -74,16 +104,30 @@ public class PersistentGui extends BaseGui {
 	public void setListener(PlaceItemFunction onPlaceItem) {
 		this.onPlaceItem = onPlaceItem;
 	}
+
+	public int[] getPersistentSlots() {
+		return IntStream.concat(Arrays.stream(inputSlots), Arrays.stream(outputSlots))
+				.toArray();
+	}
 	
 	public boolean isPersistentSlot(int slot) {
-		return Arrays.stream(this.persistentSlots).anyMatch(s -> s == slot);
+		return Arrays.stream(getPersistentSlots()).anyMatch(s -> s == slot);
 	}
+	
+	public boolean isInputSlot(int slot) {
+		return Arrays.stream(inputSlots).anyMatch(s -> s == slot);
+	}
+	
+	public boolean isOutputSlot(int slot) {
+		return Arrays.stream(outputSlots).anyMatch(s -> s == slot);
+	}
+	
 	public SaveStrategy getSaveStrategy() {
 		return saveStrategy;
 	}
 	
 	public ItemStack[] getPersistedItems() {
-		return this.getItemStacksFromPositions(persistentSlots);
+		return this.getItemStacksFromPositions(this.getPersistentSlots());
 	}
 	
 	public void save() {

@@ -12,7 +12,14 @@ import net.kyori.adventure.text.Component;
 public class CustomChest extends ConcurrentPersistentGui {
 
 	public CustomChest(int size, Component title, TileState tileState, UUID guid) {
-		super(size, title, IntStream.range(0, size).toArray(), new PDCTileSaveStrategy(tileState, guid), guid);
+		super(
+				size, 
+				title, 
+				IntStream.range(0, size).toArray(), 
+				new int[0], 
+				new PDCTileSaveStrategy(tileState, guid), 
+				guid
+			);
 	}
 	
 	

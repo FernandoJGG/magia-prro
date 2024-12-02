@@ -1,23 +1,25 @@
 package org.magiaperro.blocks.base;
 
-import java.util.UUID;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.ConcurrentPersistentGui;
+import org.magiaperro.helpers.pdc.TileStateProperty;
 import org.magiaperro.items.base.ItemID;
-import org.magiaperro.main.Keys;
 
 import com.jeff_media.morepersistentdatatypes.DataType;
 
-//TODO: Subclase con inventario sin GUI?
+//TODO: Subclase con inventario sin GUI? directamente no extender IBlockClickable?
 public abstract class InventoryBlock extends CustomBlock implements IBlockClickable {
 	
 	final int inventorySize;
+	
+	public static TileStateProperty<ItemStack[]> inventory = new TileStateProperty<ItemStack[]>("persisted_inventory", DataType.ITEM_STACK_ARRAY);
 
 	public InventoryBlock(BlockID id, ItemID itemBlockId, int inventorySize) {
 		super(id, itemBlockId);
@@ -26,8 +28,7 @@ public abstract class InventoryBlock extends CustomBlock implements IBlockClicka
 	
 	@Override
 	public void instantiateBlock(TileState tileState) {
-    	tileState.getPersistentDataContainer().set(Keys.PERSISTED_INVENTORY, DataType.ITEM_STACK_ARRAY , new ItemStack[this.inventorySize]);
-    	tileState.getPersistentDataContainer().set(Keys.BLOCK_INSTANCE_GUID, DataType.UUID , UUID.randomUUID());
+    	inventory.setValue(tileState, new ItemStack[this.inventorySize]);
 
     	super.instantiateBlock(tileState);
 	}
@@ -61,20 +62,21 @@ public abstract class InventoryBlock extends CustomBlock implements IBlockClicka
     		return inventoryHolder.getPersistedItems();
     	}
     	else {
-    		return getInventoryFromPDC(tileState);
+    		return inventory.getValue(tileState);
     	}
     }
 	
 	
-	private ItemStack[] getInventoryFromPDC(TileState tileState) {
-    	ItemStack[] items = tileState.getPersistentDataContainer().get(Keys.PERSISTED_INVENTORY, DataType.ITEM_STACK_ARRAY);
-    	if (items != null ) {
-    		return items;
-    	}
-    	else {
-    		return new ItemStack[this.inventorySize];
-    	}
-    }
+//	private ItemStack[] getInventoryFromPDC(TileState tileState) {
+//    	ItemStack[] items = this.inventory.getValue(tileState);
+//
+//    	if (items != null ) {
+//    		return items;
+//    	}
+//    	else {
+//    		return new ItemStack[this.inventorySize];
+//    	}
+//    }
 	
 	public void setItem(TileState tileState, ItemStack item, int index) {
     	UUID guid = getGuidFromTileState(tileState);
@@ -83,22 +85,13 @@ public abstract class InventoryBlock extends CustomBlock implements IBlockClicka
     		inventoryHolder.setPersistibleSlot(item, index);
     	}
     	else {
-    		ItemStack[] items = getInventoryFromPDC(tileState);
+    		ItemStack[] items = inventory.getValue(tileState);
     		items[index] = item;
-			saveInventoryToPDC(tileState, items);
+    		inventory.setValue(tileState, items);
     	}
     	
     }
 	
-	private void saveInventoryToPDC(TileState tileState, ItemStack[] items) {
-    	tileState.getPersistentDataContainer().set(Keys.PERSISTED_INVENTORY, DataType.ITEM_STACK_ARRAY, items);
-    }
-	
-
-    public static UUID getGuidFromTileState(TileState tileState) {
-		UUID guid = tileState.getPersistentDataContainer().get(Keys.BLOCK_INSTANCE_GUID, DataType.UUID);
-    	return guid;
-    }
 
 
 }

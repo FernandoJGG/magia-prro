@@ -4,7 +4,8 @@ public enum SpellID {
 	Fireball(0),
 	Snowball(1),
 	GoldenApple(2),
-	BombaAtomica(3);
+	BombaAtomica(3),
+	FlechaExplosiva(4);
 	
 	private final int index;
 

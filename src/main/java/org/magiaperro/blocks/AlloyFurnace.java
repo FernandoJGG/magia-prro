@@ -25,21 +25,19 @@ import org.magiaperro.gui.base.factories.BaseConcurrentGuiFactory;
 import org.magiaperro.gui.base.strategies.PDCTileSaveStrategy;
 import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.ItemID;
-import org.magiaperro.main.Keys;
 import org.magiaperro.operations.base.OperationHandler;
 import org.magiaperro.operations.base.TimedOperation;
+import org.magiaperro.helpers.pdc.TileStateProperty;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 //TODO: Pues casi todo. pero por abreviar:
-//El horno se queda encendido al hornear un item con el inv abierto y cerrarlo, pq? el save()? 
-//Me gustaria crear una propia subclase de InventoryBlock con la logica de operaciones
-//Incluso otra subclase para maquinas con recetas
-//Expandir la clase recetas para leer las recetas de forma modular
-//Reempezar la task cuando la receta siga siendo valida. Funcion OperationHandler.reestart(UUID, Long) para reusar la tarea?
-//En PersistentGui, todavia hace falta distinguir entre slots input/output
-//En BaseGui y Persistent Gui, cancelar apropiadamente los eventos shift-click
+// El horno se queda encendido al hornear un item con el inv abierto y cerrarlo, pq? el save()? 
+// Refinar y usar MachineBlock
+// Incluso otra subclase para maquinas con recetas
+// Expandir la clase recetas para leer las recetas de forma modular
+// Reempezar la task cuando la receta siga siendo valida.
 // Las mecanicas de encender/apagar el horno moverlos a su propia funcion, que se ejecuta cuando
 // cancelar/iniciar una funcion da true en su handler
 public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
@@ -48,14 +46,16 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 	public static final int burnTicks = 100*3; // 5 secs
 	final OperationHandler<TimedOperation> itemBurnHandler = new OperationHandler<>();
 	
+	public static TileStateProperty<Long> finishTime = new TileStateProperty<Long>("operation_finish_time", PersistentDataType.LONG);
+	
 	public AlloyFurnace(BlockID id) {
 		super(id, ItemID.AlloyFurnace, size);
 	}
 	
 	@Override
 	public void instantiateBlock(TileState tileState) {
-		super.instantiateBlock(tileState);    	
-		tileState.getPersistentDataContainer().set(Keys.BLOCK_OPERATION_FINISH_TIME, PersistentDataType.LONG, 0L);
+		super.instantiateBlock(tileState);   
+		finishTime.setValue(tileState, 0L);
 	}
 	
 	@Override
@@ -88,7 +88,8 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 			new BaseConcurrentGuiFactory (
 		     	/* Size */		size, 
 		      	/* Title */		Component.text("Horno que no hornea"), 
-		      	/* P. Slots */	new int[] {10,12,16}, 
+		      	/* Inputs */	new int[] {10,12}, 
+		      	/* Outputs */	new int[] {16},
 		    	/* Strategy */	new PDCTileSaveStrategy(tileState, guid),
 		    	/* Graphics */	graphics
 		    ),
@@ -102,7 +103,7 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 	@Override
 	public void onLoad(TileState tileState) {
 		//Comprobar si habia una operacion en progreso
-		Long endTime = tileState.getPersistentDataContainer().get(Keys.BLOCK_OPERATION_FINISH_TIME, PersistentDataType.LONG);
+		Long endTime = finishTime.getValue(tileState);
 		if(endTime != null && endTime > 0)
 			itemBurnHandler.startOperation(getGuidFromTileState(tileState), getBurnOperation(tileState, endTime));
 	}
@@ -197,8 +198,7 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
         tileState.update();
         
 		itemBurnHandler.endOperation(getGuidFromTileState(tileState));
-		tileState.getPersistentDataContainer().set(Keys.BLOCK_OPERATION_FINISH_TIME, PersistentDataType.LONG, 0L);
-		
+		finishTime.setValue(tileState, 0L);		
 	}
 	
 	//TODO: Tambien comprobar si la receta cambia para cancelar y reiniciar

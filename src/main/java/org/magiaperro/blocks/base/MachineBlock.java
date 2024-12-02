@@ -1,89 +1,125 @@
 package org.magiaperro.blocks.base;
 
-import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.TileState;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.magiaperro.gui.base.ConcurrentPersistentGui;
-import org.magiaperro.gui.base.factories.ConcurrentGuiFactory;
 import org.magiaperro.items.base.ItemID;
-import org.magiaperro.main.Keys;
+import org.magiaperro.main.Main;
+import org.magiaperro.operations.base.BaseOperation;
 import org.magiaperro.operations.base.OperationHandler;
 import org.magiaperro.operations.base.TimedOperation;
 
-public abstract class MachineBlock extends InventoryBlock implements ILoadBlock {
+//TODO: Una funcion startOperation(TileState, index);
+public abstract class MachineBlock extends CustomBlock implements ILoadBlock {
 
-	public final int operationTicks;
-	final OperationHandler<TimedOperation> operationHandler = new OperationHandler<>();
-	private final ConcurrentGuiFactory guiFactory;
+	private List<BlockOperation> timedOps = Collections.emptyList();
+	private List<OperationHandler<TimedOperation>> timedHandlers = Collections.emptyList();
+	private List<BlockOperation> auraOps = Collections.emptyList();
+	private List<OperationHandler<BaseOperation>> auraHandlers = Collections.emptyList();
 	
-	public MachineBlock(BlockID id, ItemID itemBlockId, int inventorySize, int operationTicks,
-			ConcurrentGuiFactory guiFactory) {
-		super(id, itemBlockId, inventorySize);
-		this.operationTicks = operationTicks;
-		this.guiFactory = guiFactory;
+	//TODO Mejor implementar como una lista de int 
+	private static String operationKeyName = "operation_time_";
+	
+	public MachineBlock(BlockID id, ItemID itemBlockId, int operationTicks) {
+		super(id, itemBlockId);
+	}
+	
+	public void setAuras(BlockOperation... auras) {
+		this.auraHandlers = IntStream.range(0, auras.length)
+						.mapToObj(i->new OperationHandler<>())
+						.collect(Collectors.toList());
+		this.auraOps = List.of(auras);
+	}
+	
+	public void setOperations(BlockOperation... operations) {
+		this.timedHandlers = IntStream.range(0, operations.length)
+				.mapToObj(i->new OperationHandler<TimedOperation>())
+				.collect(Collectors.toList());
+		this.timedOps = List.of(operations);
 	}
 	
 	@Override
 	public void instantiateBlock(TileState tileState) {
 		super.instantiateBlock(tileState);    	
-		tileState.getPersistentDataContainer().set(Keys.BLOCK_OPERATION_FINISH_TIME, PersistentDataType.LONG, 0L);
+		for (int i = 0; i < this.timedHandlers.size(); i++) {
+		    NamespacedKey key = new NamespacedKey(Main.instance, operationKeyName + i);
+		    tileState.getPersistentDataContainer().set(key, PersistentDataType.LONG, 0L);
+		}
+		
+	}
+
+	@Override
+	public void onLoad(TileState tileState) {
+		UUID guid = getGuidFromTileState(tileState);
+
+		for (int i = 0; i < this.timedHandlers.size(); i++) {
+		    OperationHandler<TimedOperation> handler = this.timedHandlers.get(i);
+		    NamespacedKey key = new NamespacedKey(Main.instance, operationKeyName + i);
+			Long endTime = tileState.getPersistentDataContainer().get(key, PersistentDataType.LONG);
+			if(endTime != null && endTime > 0) {
+				handler.startOperation(guid, getTimedOperation(tileState, i));
+			}
+		}
+		for (int i = 0; i < this.auraHandlers.size(); i++) {
+		    OperationHandler<BaseOperation> handler = this.auraHandlers.get(i);
+			handler.startOperation(guid, getAuraOperation(tileState, i));
+		}
+	}
+
+	@Override
+	public void onUnload(TileState tileState) {
+		this.cancellAllOperations(tileState);
 	}
 	
 	@Override
 	public void onBlockDisappear(TileState tileState) {
 		super.onBlockDisappear(tileState);
-		operationHandler.endOperation(getGuidFromTileState(tileState));
-	}
-
-	@Override
-	public void onLoad(TileState tileState) {
-		//Comprobar si habia una operacion en progreso
-		Long endTime = tileState.getPersistentDataContainer().get(Keys.BLOCK_OPERATION_FINISH_TIME, PersistentDataType.LONG);
-		if(endTime != null && endTime > 0)
-			operationHandler.startOperation(getGuidFromTileState(tileState), getOperation(tileState, endTime));
-	}
-
-	@Override
-	public void onUnload(TileState tileState) {
-		operationHandler.endOperation(getGuidFromTileState(tileState));
+		this.cancellAllOperations(tileState);
 	}
 	
-	public TimedOperation getNewOperation(TileState tileState) {
-		Long endTime = Instant.now().plusMillis(operationTicks*50).toEpochMilli();
-		return getOperation(tileState, endTime);
-	}
-	
-	public TimedOperation getOperation(TileState tileState, Long endTime) {
-		return new TimedOperation((c) -> onOperationCycle(tileState, c),(c) -> onFinish(tileState), endTime, 20L);
-	}
-	
-	public void onFinish(TileState tileState) {
-		tileState.getPersistentDataContainer().set(Keys.BLOCK_OPERATION_FINISH_TIME, PersistentDataType.LONG, 0L);
-	}
-	
-	@Override
-	public void onRightClick(PlayerInteractEvent event, TileState tileState) {
-		Player player = event.getPlayer();
+	public void cancellAllOperations(TileState tileState) {
 		UUID guid = getGuidFromTileState(tileState);
 		
-		//TODO: Funcion para pasarle a la gui cuando A. se recoge item B. se mueve item persistible
-		//TODO: Añadir slots de recogida
-		ConcurrentPersistentGui gui = ConcurrentPersistentGui.getInventoryHolder(
-			this.guiFactory,
-			guid
-	    );
-		gui.setListener(() -> onItemPlaced(tileState));
-		
-		gui.openInterface(player);
+		for (OperationHandler<TimedOperation> handler: this.timedHandlers) {
+			handler.endOperation(guid);
+		}
+		for (OperationHandler<BaseOperation> handler: this.auraHandlers) {
+			handler.endOperation(guid);
+		}
 	}
 	
-	public abstract void onOperationCycle(TileState tileState, int cycle);
+	public TimedOperation getTimedOperation(TileState tileState, int opIndex) {
+		BlockOperation timedOp = timedOps.get(opIndex);
+		return getTimedOperation(tileState, opIndex, timedOp.ticksPerCycle);
+	}
 	
-	public abstract void onItemPlaced(TileState tileState);
+	public TimedOperation getTimedOperation(TileState tileState, int opIndex, Long totalTicks) {
+		BlockOperation timedOp = timedOps.get(opIndex);
+		return new TimedOperation((c) -> onOperationCycle(tileState, c, opIndex),
+				(c) -> onOperationFinish(tileState, opIndex),
+				totalTicks, timedOp.ticksPerCycle);
+	}
+	
+	public BaseOperation getAuraOperation(TileState tileState, int opIndex) {
+		BlockOperation aura = auraOps.get(opIndex);
+		return new BaseOperation((c) -> onAuraCycle(tileState, c, opIndex), aura.ticksPerCycle);
+	}
+	
+	public void onOperationFinish(TileState tileState, int opIndex) {
+	    NamespacedKey key = new NamespacedKey(Main.instance, operationKeyName + opIndex);
+		tileState.getPersistentDataContainer().set(key, PersistentDataType.LONG, 0L);
+	}
+	
+	public abstract void onAuraCycle(TileState tileState, int cycle, int opIndex);
+	
+	public abstract void onOperationCycle(TileState tileState, int cycle, int opIndex);
+	
 
 
 

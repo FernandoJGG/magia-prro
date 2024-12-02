@@ -54,6 +54,7 @@ public class Varita extends CustomItem implements IClickable {
 
 
 	public static void selectSpell(SpellID spellId, Player player) {
+		//TODO Refactorizar a un loop mejor?
 		//Mano principal
     	ItemStack itemOnHand = player.getInventory().getItemInMainHand();
     	CustomItem itemCustom = CustomItem.fromItemStack(itemOnHand);

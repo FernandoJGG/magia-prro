@@ -20,13 +20,13 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	
     public static final ConcurrentMap<UUID, ConcurrentPersistentGui> inventoryCache = new ConcurrentHashMap<>();
     
-	public ConcurrentPersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy strategy, GuiGraphic[] graphics, UUID guid) {
-		super(size, title, persistentSlots, strategy, graphics);
+	public ConcurrentPersistentGui(int size, Component title, int[] persistentSlots, int[] outputSlots, SaveStrategy strategy, GuiGraphic[] graphics, UUID guid) {
+		super(size, title, persistentSlots, outputSlots, strategy, graphics);
 		
 		this.inventoryGuid = guid;
 	}
-	public ConcurrentPersistentGui(int size, Component title, int[] persistentSlots, SaveStrategy strategy, UUID guid) {
-		super(size, title, persistentSlots, strategy);
+	public ConcurrentPersistentGui(int size, Component title, int[] persistentSlots, int[] outputSlots, SaveStrategy strategy, UUID guid) {
+		super(size, title, persistentSlots, outputSlots, strategy);
 		
 		this.inventoryGuid = guid;
 	}
@@ -81,7 +81,7 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	}
 	
 	public void setPersistibleSlot(ItemStack item, int index) {
-		this.getInventory().setItem(this.persistentSlots[index], item);
+		this.getInventory().setItem(this.getPersistentSlots()[index], item);
 	}
 
 

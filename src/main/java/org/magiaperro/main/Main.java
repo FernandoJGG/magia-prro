@@ -3,13 +3,10 @@ package org.magiaperro.main;
 import org.magiaperro.blocks.BlockRegistry;
 import org.magiaperro.commands.CommandRegistry;
 import org.magiaperro.commands.base.BaseCommand;
+import org.magiaperro.entities.projectiles.ProjectileRegistry;
 import org.magiaperro.items.*;
-import org.magiaperro.listeners.OnPlayerInteractListener;
 import org.magiaperro.recipes.VanillaRecipes;
-import org.magiaperro.listeners.InventoryListener;
-import org.magiaperro.listeners.BlockDisappearListener;
-import org.magiaperro.listeners.BlockPlaceListener;
-import org.magiaperro.listeners.ChunkLoadListener;
+import org.magiaperro.listeners.*;
 import org.magiaperro.spells.SpellRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -27,6 +24,7 @@ public class Main extends JavaPlugin {
         SpellRegistry.register();
         CommandRegistry.register();
         BlockRegistry.register();
+        ProjectileRegistry.register();
         VanillaRecipes.register();
         
         this.registerListeners();
@@ -38,6 +36,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
         getServer().getPluginManager().registerEvents(new ChunkLoadListener(), this);
+        getServer().getPluginManager().registerEvents(new EntitiesListener(), this);
     }
 
     @Override

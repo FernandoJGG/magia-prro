@@ -1,11 +1,10 @@
 package org.magiaperro.operations.base;
 import java.util.UUID;
 
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.magiaperro.main.Main;
 
-public class BaseOperation extends BukkitRunnable implements Listener {
+public class BaseOperation extends BukkitRunnable {
 
     protected OperationFunction continueFunction;
     
@@ -20,7 +19,7 @@ public class BaseOperation extends BukkitRunnable implements Listener {
 		this.ticksPerCycle = ticksPerCycle;
 	}
     
-    public void setHandler(UUID callerID, OperationHandler<?> handler) {
+    public void setCaller(UUID callerID, OperationHandler<?> handler) {
     	this.callerID = callerID;
     	this.handler = handler;
     }

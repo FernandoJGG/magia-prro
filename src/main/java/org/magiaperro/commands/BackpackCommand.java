@@ -33,7 +33,8 @@ public class BackpackCommand extends BaseCommand {
         PersistentGui backpack = new PersistentGui(
         	/* Size */		size, 
         	/* Title */		Component.text("Mochila"), 
-        	/* Slots */		persistentSlots, 
+        	/* Input */		persistentSlots, 
+        	/* OutPut */	new int[0], 
         	/* Strategy */	new PDCSaveStrategy(player.getPersistentDataContainer()),
         	/* Graphics */	graphics
         );
