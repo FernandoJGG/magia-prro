@@ -17,7 +17,9 @@ public class Keys {
 	//public static final NamespacedKey BLOCK_INSTANCE_GUID = new NamespacedKey(Main.instance, "block_instance_guid");
 	//public static final NamespacedKey BLOCK_OPERATION_FINISH_TIME = new NamespacedKey(Main.instance, "operation_finish_time");
 	
-	
+	//TEST
+	public static final NamespacedKey MANA = new NamespacedKey(Main.instance, "mana");
+
 	
 	//String metadata = itemOnHand.getPersistentDataContainer().get(Keys.CUSTOM_ITEM_ID, PersistentDataType.STRING);
     //itemMeta.getPersistentDataContainer().set(Keys.CUSTOM_ITEM_ID, PersistentDataType.STRING, this.id);

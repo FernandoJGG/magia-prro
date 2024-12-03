@@ -4,10 +4,12 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.magiaperro.commands.base.BaseCommand;
 import org.magiaperro.gui.base.GuiGraphic;
 import org.magiaperro.gui.base.PersistentGui;
 import org.magiaperro.gui.base.strategies.PDCSaveStrategy;
+import org.magiaperro.main.Keys;
 
 import net.kyori.adventure.text.Component;
 
@@ -20,6 +22,9 @@ public class BackpackCommand extends BaseCommand {
     @Override
     public boolean execute(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
+        
+        //TEST: establece mana a 200
+        player.getPersistentDataContainer().set(Keys.MANA, PersistentDataType.INTEGER, 200);
         
         GuiGraphic[] graphics = new GuiGraphic[] {
         	new GuiGraphic (
@@ -39,6 +44,10 @@ public class BackpackCommand extends BaseCommand {
         	/* Graphics */	graphics
         );
         backpack.openInterface(player);
+        
+
+        //TEST: luego, sin pasar ese valor a mochila establece mana a 1000. comprobar a cuanto se queda
+        player.getPersistentDataContainer().set(Keys.MANA, PersistentDataType.INTEGER, 1000);
         
         return true;
     }

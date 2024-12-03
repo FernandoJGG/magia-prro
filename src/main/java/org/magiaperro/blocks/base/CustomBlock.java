@@ -2,7 +2,10 @@ package org.magiaperro.blocks.base;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.block.TileState;
 import org.bukkit.persistence.PersistentDataType;
 import org.magiaperro.blocks.BlockRegistry;
@@ -11,6 +14,8 @@ import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.ItemID;
 //import org.magiaperro.main.Keys;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.jeff_media.morepersistentdatatypes.DataType;
 
 //TODO: Remodelar por CustomMachine
@@ -42,8 +47,21 @@ public abstract class CustomBlock {
 	public void instantiateBlock(TileState tileState) {
 		blockId.setValue(tileState, this.id.getIndex());
 		instanceId.setValue(tileState, UUID.randomUUID());
+		
+		// WORKAROUND TEMPORAL: establece un jugador para evitar excepciones
+		// Deberia crear una forma de añadir una id de jugador
+    	if(tileState instanceof Skull) {
+    		 UUID playerUUID = UUID.fromString("ebd0b3d0-c4d3-4c62-9d25-3fa58d202022");
+
+    		 PlayerProfile profile = Bukkit.createProfile(playerUUID);
+             profile.getProperties().add(new ProfileProperty("textures", 
+            		 "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Q4YTU4ODEzZGJhYmQ3ZTY0MzExZmY1M2QyNzM3NWIzMjFlZWQ2ZjcyZjQxZjFlYzY0NzU2NDU0Mjg0In19fQ=="));
+             
+             
+    		((Skull) tileState).setPlayerProfile(profile);
+    	}
     	
-    	tileState.update(false, false);
+    	tileState.update();
 	}
     
     public static CustomBlock fromTileState(TileState tileState) {

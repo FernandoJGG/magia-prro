@@ -63,12 +63,12 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	public void handleCloseEvent(InventoryCloseEvent event) {
 		try {
 			if (this.getViewers().size() <= 1) {
-                this.getSaveStrategy().save(this);
+                this.save();
                 inventoryCache.remove(this.inventoryGuid);
             }
 		}
 		catch(Exception e) {
-			Bukkit.getLogger().severe("Error al instanciar inventario concurrente"
+			Bukkit.getLogger().severe("Error al cerrar inventario concurrente"
 					+ "\nClase:" + this.getClass().getName()
 					+ "\nGUID:" + this.inventoryGuid
 					+ "\nExcepcion:" + e);

@@ -2,10 +2,12 @@ package org.magiaperro.gui.base.strategies;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.TileState;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.magiaperro.blocks.base.CustomBlock;
 import org.magiaperro.gui.base.PersistentGui;
+import org.magiaperro.helpers.LogHelper;
+import org.magiaperro.helpers.TileStateHelper;
 
 public class PDCTileSaveStrategy extends PDCSaveStrategy {
 	
@@ -23,25 +25,27 @@ public class PDCTileSaveStrategy extends PDCSaveStrategy {
 		this.tileState = tileState;
 		this.guid = guid;
 	}
+	protected PersistentDataContainer getPDC() {
+		return this.tileState.getPersistentDataContainer();
+	}
 	
 	@Override
 	public void save(PersistentGui persistentGui) {
     	// Lee la GUID del tileState y comprueba si es la original antes de guardar
 		// TODO: Testing (evitar el cerrado en el evento onDestroy y ver si se vuelve a crear)
-		if(CustomBlock.instanceId.hasValue(this.pdc)) {
-			UUID pdcGuid = CustomBlock.instanceId.getValue(this.pdc);
-			if(this.guid.equals(pdcGuid)) {
-				super.save(persistentGui);
-				this.tileState.update(true, false);
+		
+		// TODO: Actualizar para incluir el seguro de TileStateHelper
+		// Además, comprobar que el otro SaveStrategy no rompa por lo mismo
+		this.tileState = TileStateHelper.getUpdatedTileState(tileState);
+		if(tileState != null) {
+			super.save(persistentGui);
+			boolean success = this.tileState.update();
+			if(!success) {
+				LogHelper.logTileState("Error al actualizar, el tileState ha sido modificado.", tileState);
 			}
 		}
 		else {
-			Bukkit.getLogger().severe("Se intenta guardar a un tileState no válido en: (" + 
-						tileState.getX() + "," +
-						tileState.getY() + "," +
-						tileState.getZ() + "," +
-						tileState.getWorld().toString() + ")"
-					);
+			LogHelper.logTileState("Se intenta guardar un inventario en tileState no valido:", tileState);
 		}
 	}
 

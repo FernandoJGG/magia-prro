@@ -122,19 +122,15 @@ public class PersistentGui extends BaseGui {
 		return Arrays.stream(outputSlots).anyMatch(s -> s == slot);
 	}
 	
-	public SaveStrategy getSaveStrategy() {
-		return saveStrategy;
-	}
-	
 	public ItemStack[] getPersistedItems() {
 		return this.getItemStacksFromPositions(this.getPersistentSlots());
 	}
 	
-	public void save() {
+	protected void save() {
 		this.saveStrategy.save(this);
 	}
 	
-	public void load() {
+	protected void load() {
 		this.saveStrategy.load(this);
 	}
 

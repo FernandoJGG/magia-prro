@@ -1,6 +1,5 @@
 package org.magiaperro.blocks;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -15,19 +14,18 @@ import org.bukkit.block.data.type.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.magiaperro.blocks.base.BlockID;
 import org.magiaperro.blocks.base.ILoadBlock;
 import org.magiaperro.blocks.base.InventoryBlock;
+import org.magiaperro.blocks.base.delegators.TimedOperationDelegate;
 import org.magiaperro.gui.base.ConcurrentPersistentGui;
 import org.magiaperro.gui.base.GuiGraphic;
 import org.magiaperro.gui.base.factories.BaseConcurrentGuiFactory;
 import org.magiaperro.gui.base.strategies.PDCTileSaveStrategy;
+import org.magiaperro.helpers.LogHelper;
+import org.magiaperro.helpers.TileStateHelper;
 import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.ItemID;
-import org.magiaperro.operations.base.OperationHandler;
-import org.magiaperro.operations.base.TimedOperation;
-import org.magiaperro.helpers.pdc.TileStateProperty;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -44,24 +42,33 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 
 	public static final int size = 27;
 	public static final int burnTicks = 100*3; // 5 secs
-	final OperationHandler<TimedOperation> itemBurnHandler = new OperationHandler<>();
-	
-	public static TileStateProperty<Long> finishTime = new TileStateProperty<Long>("operation_finish_time", PersistentDataType.LONG);
-	
+
+    private final TimedOperationDelegate operationDelegate;	
+    private static final String SMELT = "smelt";
+    
 	public AlloyFurnace(BlockID id) {
 		super(id, ItemID.AlloyFurnace, size);
+        this.operationDelegate = new TimedOperationDelegate();
+
+        // Registramos la operación "burn"
+        operationDelegate.registerOperation(
+        	SMELT,
+            burnTicks,
+            this::onBurn,   // Función onBurn
+            this::onFinish  // Función onFinish
+        );
 	}
 	
 	@Override
 	public void instantiateBlock(TileState tileState) {
-		super.instantiateBlock(tileState);   
-		finishTime.setValue(tileState, 0L);
+		super.instantiateBlock(tileState);
+		// Iniciar timers a 0 o dejar a null?
 	}
 	
 	@Override
 	public void onBlockDisappear(TileState tileState) {
 		super.onBlockDisappear(tileState);
-		itemBurnHandler.endOperation(getGuidFromTileState(tileState));
+		this.operationDelegate.onUnload(tileState);
 	}
 
 	@Override
@@ -95,34 +102,25 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 		    ),
 			guid
 	    );
-		gui.setListener(() -> onItemPlaced(tileState));
+		gui.setListener(() -> TileStateHelper.updateAndExecute(tileState,
+        		(updatedTileState) -> onItemPlaced(updatedTileState)
+        ));
 		
 		gui.openInterface(player);
 	}
 
 	@Override
 	public void onLoad(TileState tileState) {
-		//Comprobar si habia una operacion en progreso
-		Long endTime = finishTime.getValue(tileState);
-		if(endTime != null && endTime > 0)
-			itemBurnHandler.startOperation(getGuidFromTileState(tileState), getBurnOperation(tileState, endTime));
+		this.operationDelegate.onLoad(tileState);
 	}
 
 	@Override
 	public void onUnload(TileState tileState) {
-		itemBurnHandler.endOperation(getGuidFromTileState(tileState));
+		this.operationDelegate.onUnload(tileState);
 	}
 	
-	public TimedOperation getBurnOperation(TileState tileState) {
-		Long endTime = Instant.now().plusMillis(burnTicks*50).toEpochMilli();
-		return getBurnOperation(tileState, endTime);
-	}
-	
-	public TimedOperation getBurnOperation(TileState tileState, Long endTime) {
-		return new TimedOperation((c) -> onBurn(tileState, c),(c) -> onFinish(tileState), endTime, 20L);
-	}
-	
-	public void onFinish(TileState tileState) {
+	private void onFinish(TileState tileState) {
+		LogHelper.logTileState("Se hace smelt", tileState);
 		ItemStack[] inventory = getInventoryFromTileState(tileState);
 		if((inventory[2] == null || CustomItem.isCustomItem(inventory[2], ItemID.BronzeIngot)) && 
 				isValidRecipe(inventory)) {
@@ -155,7 +153,7 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 		stopBurn(tileState);
 	}
 	
-	public void onBurn(TileState tileState, int cycle) {
+	private void onBurn(TileState tileState, int cycle) {
 		ItemStack[] inventory = getInventoryFromTileState(tileState);
 		if((inventory[2] == null || CustomItem.isCustomItem(inventory[2], ItemID.BronzeIngot)) && 
 				isValidRecipe(inventory)) {
@@ -191,34 +189,34 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 		}
 	}
 	
-	public void stopBurn(TileState tileState) {
+	private void stopBurn(TileState tileState) {
     	Furnace horno = (Furnace) tileState.getBlockData();
 		horno.setLit(false);
         tileState.setBlockData(horno);
         tileState.update();
         
-		itemBurnHandler.endOperation(getGuidFromTileState(tileState));
-		finishTime.setValue(tileState, 0L);		
+		this.operationDelegate.stopOperation(tileState, SMELT);
 	}
 	
 	//TODO: Tambien comprobar si la receta cambia para cancelar y reiniciar
 	//(Al haber solo una receta ahora no importa mucho)
-	public void onItemPlaced(TileState tileState) {
-		UUID guid = getGuidFromTileState(tileState);
+	private void onItemPlaced(TileState tileState) {
+		tileState = TileStateHelper.getUpdatedTileState(tileState);
+		
 		if(isValidRecipe(tileState)) {
-			itemBurnHandler.startOperation(guid, getBurnOperation(tileState));
+			this.operationDelegate.startOperation(tileState, SMELT);
 		}
 		else {
 			stopBurn(tileState);
 		}
 	}
 	
-	public boolean isValidRecipe(TileState tileState) {
+	private boolean isValidRecipe(TileState tileState) {
 		ItemStack[] inventory = getInventoryFromTileState(tileState);
 
 		return isValidRecipe(inventory);
 	}
-	public boolean isValidRecipe(ItemStack[] inventory) {
+	private boolean isValidRecipe(ItemStack[] inventory) {
 //		for(ItemStack is : inventory) {
 //			Bukkit.getLogger().info((is == null ? "null" : is.getDisplayName())
 //					+ " " + CustomItem.isVanillaItem(is, Material.RAW_COPPER)
