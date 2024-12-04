@@ -3,7 +3,6 @@ package org.magiaperro.blocks.base;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.block.TileState;

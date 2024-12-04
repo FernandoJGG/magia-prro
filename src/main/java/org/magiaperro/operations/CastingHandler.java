@@ -1,6 +1,6 @@
-package org.magiaperro.operations.base;
+package org.magiaperro.operations;
 
-public class CastingHandler extends OperationHandler<TimedOperation> {
+public class CastingHandler extends OperationHandler<OfflineTimedOperation> {
 	
 	private static CastingHandler casters;
 	

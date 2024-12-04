@@ -1,10 +1,14 @@
-package org.magiaperro.operations.base;
+package org.magiaperro.operations;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import java.util.UUID;
 
+/**
+ * Se encarga de la gestión de una operación, y asegura que una misma entidad
+ * no pueda ejecutar más de una a la vez.
+ */
 public class OperationHandler<T extends BaseOperation> {
 
 	protected final Map<UUID, T> operations = new ConcurrentHashMap<>();
@@ -36,14 +40,16 @@ public class OperationHandler<T extends BaseOperation> {
         }
     }
     
-    public boolean removeOperation(UUID guid) {
+    public boolean restartOperation(UUID guid, T operation) {
+        this.endOperation(guid);
+        this.startOperation(guid, operation);
+        
+        return true;
+    }
+    
+    protected boolean removeOperation(UUID guid) {
         T operation = operations.remove(guid);
         
         return operation != null;
     }
-    
-    
-//    public @Nullable ItemStack getProgressBar() {
-//        return progressBar;
-//    }
 }

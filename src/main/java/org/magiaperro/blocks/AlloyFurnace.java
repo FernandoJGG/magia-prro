@@ -41,7 +41,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 
 	public static final int size = 27;
-	public static final int burnTicks = 100*3; // 5 secs
+	public static final Long burnTicks = 5*20L; // 5 secs
 
     private final TimedOperationDelegate operationDelegate;	
     private static final String SMELT = "smelt";
@@ -94,7 +94,7 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 		ConcurrentPersistentGui gui = ConcurrentPersistentGui.getInventoryHolder(
 			new BaseConcurrentGuiFactory (
 		     	/* Size */		size, 
-		      	/* Title */		Component.text("Horno que no hornea"), 
+		      	/* Title */		Component.text("Horno de aleación"), 
 		      	/* Inputs */	new int[] {10,12}, 
 		      	/* Outputs */	new int[] {16},
 		    	/* Strategy */	new PDCTileSaveStrategy(tileState, guid),
@@ -119,8 +119,9 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 		this.operationDelegate.onUnload(tileState);
 	}
 	
-	private void onFinish(TileState tileState) {
-		LogHelper.logTileState("Se hace smelt", tileState);
+	private void onFinish(TileState tileState, Long fullCycles, Long excess) {
+		LogHelper.logTileState("Se hace smelt" + ". Han podido ocurrir "+ fullCycles + 
+				" operaciones. Ha sobrado " + excess + " ticks.", tileState);
 		ItemStack[] inventory = getInventoryFromTileState(tileState);
 		if((inventory[2] == null || CustomItem.isCustomItem(inventory[2], ItemID.BronzeIngot)) && 
 				isValidRecipe(inventory)) {
@@ -141,22 +142,27 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 	            world.playSound(location, Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
 	            Bukkit.getWorlds().get(0).getFullTime();
 	        }
-
-			setItem(tileState, inventory[0].subtract(), 0);
-			setItem(tileState, inventory[1].subtract(), 1);
+	        
+	        int amountIngots = inventory[2] == null ? 0 : inventory[2].getAmount();
+	        int itemsSmelt = (int) Math.min(Math.min(64-amountIngots, fullCycles),
+	        				Math.min(inventory[0].getAmount(), inventory[1].getAmount()));
+	        
+			setItem(tileState, inventory[0].subtract(itemsSmelt), 0);
+			setItem(tileState, inventory[1].subtract(itemsSmelt), 1);
 			if(inventory[2] != null)
-				setItem(tileState, inventory[2].add(), 2);
+				setItem(tileState, inventory[2].add(itemsSmelt), 2);
 			else
-				setItem(tileState, CustomItem.fromId(ItemID.BronzeIngot).buildItemStack(), 2);
+				setItem(tileState, CustomItem.fromId(ItemID.BronzeIngot).buildItemStack(itemsSmelt), 2);
 	        
 		}
-		stopBurn(tileState);
+		this.operationDelegate.restartOperation(tileState, SMELT, excess);
 	}
 	
 	private void onBurn(TileState tileState, int cycle) {
 		ItemStack[] inventory = getInventoryFromTileState(tileState);
+        int amountIngots = inventory[2] == null ? 0 : inventory[2].getAmount();
 		if((inventory[2] == null || CustomItem.isCustomItem(inventory[2], ItemID.BronzeIngot)) && 
-				isValidRecipe(inventory)) {
+				isValidRecipe(inventory) && amountIngots < 64) {
 	        World world = tileState.getWorld();
 			Location location = tileState.getLocation();
 			
@@ -180,8 +186,8 @@ public class AlloyFurnace extends InventoryBlock implements ILoadBlock {
 	            Location particleLocation = location.clone().add(pos[0], pos[1], pos[2]);
 	            world.spawnParticle(Particle.FLAME, particleLocation, 0, 0, 0, 0, 0);
 	            // Reproduce el sonido de quemado
-	            if(cycle%2 == 0)
-	            	world.playSound(location, Sound.BLOCK_FIRE_AMBIENT, 1.5f, 1.0f);
+	            if(cycle%2 == 1)
+	            	world.playSound(location, Sound.BLOCK_FIRE_AMBIENT, 1.3f, 1.0f);
 	        }
 		}
 		else {

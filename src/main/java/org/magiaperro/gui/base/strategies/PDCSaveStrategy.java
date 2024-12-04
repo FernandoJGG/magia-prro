@@ -18,10 +18,11 @@ public class PDCSaveStrategy implements SaveStrategy {
 		this.pdc = pdc;
 	}
 	
-	PDCSaveStrategy(PersistentDataContainer pdc, String pdcKey) {
+	public PDCSaveStrategy(PersistentDataContainer pdc, String pdcKey) {
 		this.pdc = pdc;
 		this.pdcKey = new NamespacedKey(Main.instance, pdcKey);
 	}
+	
 	protected PersistentDataContainer getPDC() {
 		return this.pdc;
 	}

@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.magiaperro.gui.base.ConcurrentPersistentGui;
 import org.magiaperro.gui.base.GuiGraphic;
-import org.magiaperro.gui.base.strategies.PDCTileSaveStrategy;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
 
 import net.kyori.adventure.text.Component;

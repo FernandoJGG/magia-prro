@@ -5,6 +5,9 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.magiaperro.main.Main;
 
+/**
+ * Wrapper para acceder al PersistentDataContainer de una entidad de manera más legible
+ */
 public class PDCProperty<T> implements IPDCProperty<T> {
     private final String name;
     private final PersistentDataType<?, T> dataType;

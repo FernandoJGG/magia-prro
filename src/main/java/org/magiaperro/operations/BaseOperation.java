@@ -1,20 +1,24 @@
-package org.magiaperro.operations.base;
+package org.magiaperro.operations;
 import java.util.UUID;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.magiaperro.main.Main;
 
+/**
+ * Wrapper para encapsular el funcionamiento de BukkitRunnable
+ * No realiza ninguna lógica, solo ejecuta el Consumer en el intervalo determinado
+ */
 public class BaseOperation extends BukkitRunnable {
 
-    protected OperationFunction continueFunction;
+    protected final OperationConsumer continueFunction;
     
-    protected Long ticksPerCycle;
+    protected final Long ticksPerCycle;
     protected int cycle = 0;
 
     protected UUID callerID;
     protected OperationHandler<?> handler;
 
-    public BaseOperation(OperationFunction continueFunction, Long ticksPerCycle) {
+    public BaseOperation(OperationConsumer continueFunction, Long ticksPerCycle) {
 		this.continueFunction = continueFunction;
 		this.ticksPerCycle = ticksPerCycle;
 	}
