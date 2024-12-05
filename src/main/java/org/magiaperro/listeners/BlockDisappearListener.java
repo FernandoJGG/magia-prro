@@ -24,7 +24,7 @@ public class BlockDisappearListener implements Listener {
 	    boolean isCustom = handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_BREAK);
 	    if (isCustom) {
 //	        event.setDropItems(false);
-            event.getBlock().setType(Material.AIR, false);
+            event.getBlock().setType(Material.AIR, true);
 	    }
 	}
 	
@@ -33,7 +33,7 @@ public class BlockDisappearListener implements Listener {
 	    boolean isCustom = handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_DESTROY);
 	    if (isCustom) {
 //	        event.setWillDrop(false);
-            event.getBlock().setType(Material.AIR, false);
+            event.getBlock().setType(Material.AIR, true);
 	    }
 	}
 	
@@ -42,7 +42,7 @@ public class BlockDisappearListener implements Listener {
 	    for (Block block : event.blockList()) {
 	        boolean isCustom = handleBlockDisappear(block, BlockDisappearReason.BLOCK_EXPLODE);
 	        if (isCustom) {
-	            block.setType(Material.AIR, false);
+	            block.setType(Material.AIR, true);
 	        }
 	    }
 	}
@@ -52,7 +52,7 @@ public class BlockDisappearListener implements Listener {
 	    for (Block block : event.blockList()) {
 	        boolean isCustom = handleBlockDisappear(block, BlockDisappearReason.ENTITY_EXPLODE);
 	        if (isCustom) {
-	            block.setType(Material.AIR, false);
+	            block.setType(Material.AIR, true);
 	        }
 	    }
 	}
@@ -61,7 +61,7 @@ public class BlockDisappearListener implements Listener {
 	public void onBlockBurn(BlockBurnEvent event) {
 		boolean isCustom = handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_BURN);
         if (isCustom) {
-            event.getBlock().setType(Material.AIR, false);
+            event.getBlock().setType(Material.AIR, true);
         }
 	}
 	
@@ -71,7 +71,7 @@ public class BlockDisappearListener implements Listener {
 	        if (block.getPistonMoveReaction() == PistonMoveReaction.BREAK) {
 	            boolean isCustom = handleBlockDisappear(block, BlockDisappearReason.PISTON_EXTEND);
 	            if (isCustom) {
-	                block.setType(Material.AIR, false);
+	                block.setType(Material.AIR, true);
 	            }
 	        }
 	    }
@@ -83,7 +83,7 @@ public class BlockDisappearListener implements Listener {
 	        if (block.getPistonMoveReaction() == PistonMoveReaction.BREAK) {
 	            boolean isCustom = handleBlockDisappear(block, BlockDisappearReason.PISTON_RETRACT);
 	            if (isCustom) {
-	                block.setType(Material.AIR, false);
+	                block.setType(Material.AIR, true);
 	            }
 	        }
 	    }

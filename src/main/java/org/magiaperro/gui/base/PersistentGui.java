@@ -4,10 +4,12 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.strategies.SaveStrategy;
 import org.magiaperro.helpers.InventoryHelper;
@@ -55,29 +57,74 @@ public class PersistentGui extends BaseGui {
 
 	@Override
 	public void handleClickEvent(InventoryClickEvent event) {
-		// Permitimos mover objetos del inventario del jugador a la GUI
-		// Cuidado: No se comprueba el tipo del slot destino
-		// TODO: Evitar mover a slots no input
+		// Gestiona y precide los movimientos a la gui con shift click
 		if (event.getRawSlot() >= inventory.getSize() && 
 				event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+			ItemStack itemToMove = event.getCurrentItem();
+            int stackSizeToMove = itemToMove.getAmount();
+
+	        Inventory targetInventory = event.getInventory();
+	        
+	        for (int i = 0; i < this.size; i++) {
+	            ItemStack slotItem = targetInventory.getItem(i);
+
+	            if (slotItem == null || slotItem.getType() == Material.AIR) {
+	                // Primer slot vacío encontrado
+	            	if(isInputSlot(i)) {
+		                this.callListener();
+		                return;
+	            	}
+	            	else {
+	            		event.setCancelled(true);
+	    	        	return;
+	            	}
+	            } 
+	            else if (slotItem.isSimilar(itemToMove) && slotItem.getAmount() < slotItem.getMaxStackSize()) {
+	                // Slot con ítem similar y stack incompleto
+	            	if(slotItem.getAmount() + stackSizeToMove <= slotItem.getMaxStackSize()) {
+	            		if(isInputSlot(i)) {
+			                this.callListener();
+			                return;
+		            	}
+		            	else {
+		            		event.setCancelled(true);
+		    	        	return;
+		            	}
+	            	}
+	            	else {
+	            		if(isInputSlot(i)) {
+	            			stackSizeToMove -=  slotItem.getMaxStackSize() - slotItem.getAmount();
+	            		}
+		            	else {
+		            		event.setCancelled(true);
+		    	        	return;
+		            	}
+	            	}
+	            }
+	        }
 			return;
 		}
-		Bukkit.getLogger().info("Llega al evento");
-        
+		
 		boolean isPersistent = isPersistentSlot(event.getRawSlot());
 		if(!isPersistent) {
+			// Dejamos al padre BaseGui gestionar la interfaz
 			super.handleClickEvent(event);
 		}
-		else if(this.onPlaceItem != null && isPersistent){
+		else {
 			// No deja colocar objetos en slots de output
 			if(InventoryHelper.isPutAction(event.getAction())
 					&& isOutputSlot(event.getRawSlot())) {
 	        	event.setCancelled(true);
+	        	return;
 	        }
-			Bukkit.getLogger().info("Llega al if");
+			this.callListener();
+		}
+	}
+	
+	public void callListener() {
+		if(this.onPlaceItem != null) {
 			// Al proximo tick para tener el inventario actualizado
 			Bukkit.getScheduler().runTask(Main.instance, () -> {
-				Bukkit.getLogger().info("Llega al runnable");
 	            this.onPlaceItem.onPlace();
 	        });
 		}
@@ -92,11 +139,8 @@ public class PersistentGui extends BaseGui {
             }
         }
 
-		if(this.onPlaceItem != null && event.getRawSlots().stream().anyMatch(x-> isInputSlot(x))){
-			this.onPlaceItem.onPlace();
-			Bukkit.getScheduler().runTask(Main.instance, () -> {
-	            this.onPlaceItem.onPlace();
-	        });
+		if(event.getRawSlots().stream().anyMatch(x-> isInputSlot(x))){
+			this.callListener();
 		}
 	}
 	
