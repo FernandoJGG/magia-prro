@@ -63,7 +63,10 @@ public abstract class BaseGui implements InventoryHolder {
     }
 
 	public void openInterface(Player player) {
-		player.openInventory(inventory);
+		// Evita abrir un inventario ya abierto
+		if (!player.getOpenInventory().getTopInventory().equals(inventory)) {
+			player.openInventory(inventory);
+	    }
 	}
 
 	@Override

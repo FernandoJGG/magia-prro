@@ -2,6 +2,7 @@ package org.magiaperro.main;
 
 import org.bukkit.NamespacedKey;
 
+// TODO: Quizas reorientar a simplemente ser una coleccion de strings para IPDCProperty
 public class Keys {
 	// Registries
 	public static final NamespacedKey CUSTOM_ITEM_ID = new NamespacedKey(Main.instance, "custom_item_id");

@@ -7,13 +7,14 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.magiaperro.blocks.base.BlockID;
-import org.magiaperro.blocks.base.CustomBlock;
+import org.magiaperro.machines.base.MachineID;
+import org.magiaperro.machines.base.Machine;
+import org.magiaperro.machines.base.MachineBlock;
 
 public class PlaceableItem extends CustomItem {
-	protected BlockID blockToPlace;
+	protected MachineID blockToPlace;
 	
-	public PlaceableItem(ItemID id, String itemName, Material material, List<String> lore, BlockID blockToPlace) {
+	public PlaceableItem(ItemID id, String itemName, Material material, List<String> lore, MachineID blockToPlace) {
 		super(id, itemName, material, lore);
 		this.blockToPlace = blockToPlace;
 	}
@@ -24,8 +25,8 @@ public class PlaceableItem extends CustomItem {
         if(placedBlock.getState() instanceof TileState) {
         	TileState tileState = (TileState) placedBlock.getState();
 
-        	CustomBlock customBlock = CustomBlock.fromId(blockToPlace);
-        	customBlock.instantiateBlock(tileState);
+        	Machine machine = Machine.fromId(blockToPlace);
+        	machine.instantiateMachine(new MachineBlock(tileState));
 
         }
         else {

@@ -33,6 +33,7 @@ public class ConcurrentPersistentGui extends PersistentGui {
 	
 	public static ConcurrentPersistentGui getInventoryHolder(ConcurrentGuiFactory factory, UUID guid) {
 		try {
+
 			//Segun he leido, bukkit es single-thread, por lo que realmente no es necesario hacer un bloque synchronized.
 			if (inventoryCache.containsKey(guid)) {
             	ConcurrentPersistentGui inventory = inventoryCache.get(guid);

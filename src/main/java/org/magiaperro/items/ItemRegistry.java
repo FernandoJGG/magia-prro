@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
-import org.magiaperro.blocks.base.BlockID;
 import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.ItemID;
 import org.magiaperro.items.base.PlaceableItem;
+import org.magiaperro.machines.base.MachineID;
 
 public class ItemRegistry {
     public static final Map<ItemID, CustomItem> customItems = new HashMap<>();
@@ -23,16 +23,16 @@ public class ItemRegistry {
         
         PlaceableItem customCrafter = new PlaceableItem(ItemID.CustomCrafter, "Krfter prron", 
         		Material.DAYLIGHT_DETECTOR, Arrays.asList("Crafteador perrón que aún no craftea"), 
-        		BlockID.CustomCrafter);
+        		MachineID.CustomCrafter);
         PlaceableItem customCrafter2 = new PlaceableItem(ItemID.CustomCrafter2, "Krfter prron 2", 
         		Material.PLAYER_HEAD, Arrays.asList("Crafteador perrón que aún no craftea"), 
-        		BlockID.CustomCrafter);
+        		MachineID.CustomCrafter);
         PlaceableItem cofreMagico = new PlaceableItem(ItemID.CofreMagico, "Kfre majiko", 
         		Material.ENCHANTING_TABLE, Arrays.asList("Un cofre que le da su magia al prro"), 
-        		BlockID.CofreMagico);
+        		MachineID.CofreMagico);
         PlaceableItem horno = new PlaceableItem(ItemID.AlloyFurnace, "Horno de aleación", 
         		Material.FURNACE, Arrays.asList("Un horno que hace aleaciones :V"), 
-        		BlockID.AlloyFurnace);
+        		MachineID.AlloyFurnace);
         
         CustomItem bronzeIngot = new CustomItem(ItemID.BronzeIngot, "Lingote de bronce", 
         		Material.COPPER_INGOT, Arrays.asList()); 

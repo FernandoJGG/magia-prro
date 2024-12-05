@@ -1,13 +1,13 @@
-package org.magiaperro.blocks.base;
+package org.magiaperro.machines.base;
 
-public enum BlockID {
+public enum MachineID {
 	CustomCrafter(0),
 	CofreMagico(1),
 	AlloyFurnace(2);
 	
 	private final int index;
 
-    private BlockID(int index) {
+    private MachineID(int index) {
         this.index = index;
     }
 
@@ -15,8 +15,8 @@ public enum BlockID {
         return index;
     }
     
-    public static BlockID getByIndex(int index) {
-        for (BlockID element : BlockID.values()) {
+    public static MachineID getByIndex(int index) {
+        for (MachineID element : MachineID.values()) {
             if (element.getIndex() == index) {
                 return element;
             }

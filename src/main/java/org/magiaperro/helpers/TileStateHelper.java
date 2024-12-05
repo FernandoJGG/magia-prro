@@ -5,7 +5,9 @@ import java.util.function.Consumer;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
-import org.magiaperro.blocks.base.CustomBlock;
+import org.magiaperro.machines.base.IMachineData;
+import org.magiaperro.machines.base.Machine;
+import org.magiaperro.machines.base.MachineBlock;
 
 public class TileStateHelper {
 	
@@ -17,16 +19,31 @@ public class TileStateHelper {
         }
     }
     
+    // TODO: Logeo y testing
+    public static <T> void updateAndExecute(IMachineData machineData, Consumer<IMachineData> function) {
+    	if(machineData instanceof MachineBlock) {
+    		MachineBlock machineBlock = (MachineBlock) machineData;
+    		TileState updatedTileState = getUpdatedTileState(machineBlock.getTileState());
+    		if (updatedTileState == null) {
+    			//TODO: cancelar la op. Para ello pasar como parametro su op handler.
+    			return;
+    		}
+    		machineBlock.setTileState(updatedTileState);
+    		machineData = machineBlock;
+    	}
+    	function.accept(machineData);
+    }
+    
 	// Actualiza el tileState al estado actual, a traves de su posición
 	// Nulo si el tileState no existe o no tiene la misma GUID (Es un bloque distinto)
     public static TileState getUpdatedTileState(TileState tileState) {
     	Block block = tileState.getLocation().getBlock();
     	if(block != null && block.getState() != null && block.getState() instanceof TileState) {
 			TileState currentTileState = (TileState) block.getState();
-			CustomBlock customBlock = CustomBlock.fromTileState(tileState);
-    		if (customBlock != null) {
-    			UUID currentId = CustomBlock.getGuidFromTileState(currentTileState);
-    			UUID originalId = CustomBlock.getGuidFromTileState(tileState);
+			Machine machine = Machine.fromPDC(tileState.getPersistentDataContainer());
+    		if (machine != null) {
+    			UUID currentId = Machine.getGuidFromPDC(currentTileState.getPersistentDataContainer());
+    			UUID originalId = Machine.getGuidFromPDC(tileState.getPersistentDataContainer());
     			if(currentId.equals(originalId)) {
     				return currentTileState;
     			}

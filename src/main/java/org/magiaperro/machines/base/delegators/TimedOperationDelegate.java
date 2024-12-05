@@ -1,15 +1,15 @@
-package org.magiaperro.blocks.base.delegators;
+package org.magiaperro.machines.base.delegators;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.block.TileState;
 import org.bukkit.persistence.PersistentDataType;
-import org.magiaperro.blocks.base.CustomBlock;
 import org.magiaperro.helpers.TileStateHelper;
-import org.magiaperro.helpers.pdc.TileStateProperty;
+import org.magiaperro.helpers.pdc.PDCProperty;
+import org.magiaperro.machines.base.IMachineData;
+import org.magiaperro.machines.base.Machine;
 import org.magiaperro.operations.OperationHandler;
 import org.magiaperro.operations.OfflineTimedOperation;
 
@@ -23,17 +23,17 @@ public class TimedOperationDelegate {
     private class BlockOperation {
         public String id;
         public OperationHandler<OfflineTimedOperation> handler;
-        public TileStateProperty<Long> startTime;
-        public BlockContinueConsumer onContinue;
-        public BlockFinishConsumer onFinish;
+        public PDCProperty<Long> startTime;
+        public MachineContinueConsumer onContinue;
+        public MachineFinishConsumer onFinish;
         public Long ticksDuration;
 
         public BlockOperation(String id, Long duration,
-        		BlockContinueConsumer onContinue, 
-        		BlockFinishConsumer onFinish) {
+        		MachineContinueConsumer onContinue, 
+        		MachineFinishConsumer onFinish) {
             this.id = id;
             this.handler = new OperationHandler<>();
-            this.startTime = new TileStateProperty<>("start_time_"+id, PersistentDataType.LONG);
+            this.startTime = new PDCProperty<>("start_time_"+id, PersistentDataType.LONG);
             this.onContinue = onContinue;
             this.onFinish = onFinish;
             this.ticksDuration = duration;
@@ -50,34 +50,35 @@ public class TimedOperationDelegate {
      * @param onFinish       Función que se ejecuta al finalizar la operación.
      */
     public void registerOperation(String id, Long duration, 
-    							BlockContinueConsumer onContinue,
-    							BlockFinishConsumer onFinish) {
+    							MachineContinueConsumer onContinue,
+    							MachineFinishConsumer onFinish) {
         operations.put(id, new BlockOperation(id, duration, onContinue, onFinish));
     }
 
     /**
      * Carga todas las operaciones registradas desde el estado del bloque.
      */
-    public void onLoad(TileState tileState) {
+    public void onLoad(IMachineData machineData) {
         for (BlockOperation operation : operations.values()) {
-        	resumeOperation(tileState, operation);
+        	resumeOperation(machineData, operation);
         }
     }
     
-    public void onUnload(TileState tileState) {
+    public void onUnload(IMachineData machineData) {
         for (BlockOperation operation : operations.values()) {
-            stopOperation(tileState, operation.id);
+        	pauseOperation(machineData, operation.id);
         }
     }
     
     /**
      * Reanuda una operacion que ya estaba iniciada, si la hubiese
      */
-    private void resumeOperation(TileState tileState, BlockOperation operation) {
-        Long startTime = operation.startTime.getValue(tileState);
+    private void resumeOperation(IMachineData machineData, BlockOperation operation) {
+        Long startTime = operation.startTime.getValue(machineData.getPDC());
+
         if (startTime != null && startTime > 0) {
-            OfflineTimedOperation timedOperation = createTimedOperation(tileState, operation);
-            UUID guid = CustomBlock.getGuidFromTileState(tileState);
+            OfflineTimedOperation timedOperation = createTimedOperation(machineData, operation);
+            UUID guid = Machine.getGuidFromMachine(machineData);
             operation.handler.startOperation(guid, timedOperation);
         }
     }
@@ -85,74 +86,87 @@ public class TimedOperationDelegate {
     /**
      * Inicia una nueva operacion que inicia en el instante actual
      */
-    public void startOperation(TileState tileState, String id) {
-        this.startOperation(tileState, id, Bukkit.getWorld("world").getFullTime());
+    public void startOperation(IMachineData machineData, String id) {
+        this.startOperation(machineData, id, Bukkit.getWorld("world").getFullTime());
     }
     
 
     /**
      *  Inicia una operación con un tiempo de inicio determinado
      */
-    public void startOperation(TileState tileState, String id, Long startInstant) {
+    public void startOperation(IMachineData machineData, String id, Long startInstant) {
         BlockOperation operation = operations.get(id);
         if (operation == null) return;
 
-        operation.startTime.setValue(tileState, startInstant);
-        tileState.update();
+        operation.startTime.setValue(machineData.getPDC(), startInstant);
+        machineData.update();
 
-        UUID guid = CustomBlock.getGuidFromTileState(tileState);
-        OfflineTimedOperation timedOperation = createTimedOperation(tileState, operation);
+        UUID guid = Machine.getGuidFromMachine(machineData);
+        OfflineTimedOperation timedOperation = createTimedOperation(machineData, operation);
         operation.handler.startOperation(guid, timedOperation);
     }
+    /**
+     * Pausa una operación específica, pero no reinicia el tiempo de inicio
+     * Usada cuando una operacion se detiene por descarga del chunk
+     */
+    private void pauseOperation(IMachineData machineData, String id) {
+        BlockOperation operation = operations.get(id);
+        if (operation == null) return;
 
+        UUID guid = Machine.getGuidFromMachine(machineData);
+        operation.handler.endOperation(guid);
+    }
+    
     /**
      * Detiene una operación específica.
      */
-    public void stopOperation(TileState tileState, String id) {
+    public void stopOperation(IMachineData machineData, String id) {
         BlockOperation operation = operations.get(id);
         if (operation == null) return;
 
-        UUID guid = CustomBlock.getGuidFromTileState(tileState);
+        UUID guid = Machine.getGuidFromMachine(machineData);
         operation.handler.endOperation(guid);
-        operation.startTime.setValue(tileState, 0L);
+        operation.startTime.setValue(machineData.getPDC(), 0L);
+        machineData.update();
     }
     
     /**
      * Detiene una operacion previa si existiese e inicia una nueva
      */
-    public void restartOperation(TileState tileState, String id, Long offset) {
+    public void restartOperation(IMachineData machineData, String id, Long offset) {
         BlockOperation operation = operations.get(id);
         if (operation == null) return;
 
         Long startInstant = Bukkit.getWorld("world").getFullTime() - offset;
-        operation.startTime.setValue(tileState, startInstant);
-        tileState.update();
+        operation.startTime.setValue(machineData.getPDC(), startInstant);
+        machineData.update();
 
-        UUID guid = CustomBlock.getGuidFromTileState(tileState);
-        OfflineTimedOperation timedOperation = createTimedOperation(tileState, operation);
+        UUID guid = Machine.getGuidFromMachine(machineData);
+        OfflineTimedOperation timedOperation = createTimedOperation(machineData, operation);
         operation.handler.restartOperation(guid, timedOperation);
     }
 
     /**
      * Crea una instancia de TimedOperation.
      */
-    private OfflineTimedOperation createTimedOperation(TileState tileState, BlockOperation operation) {
+    private OfflineTimedOperation createTimedOperation(IMachineData machineData, BlockOperation operation) {
         return new OfflineTimedOperation(
-            (c) -> TileStateHelper.updateAndExecute(tileState,
+            (c) -> TileStateHelper.updateAndExecute(machineData,
             		(updatedTileState) -> operation.onContinue.run(updatedTileState, c)
             ),
-            (c,e) -> TileStateHelper.updateAndExecute(tileState,
+            (c,e) -> TileStateHelper.updateAndExecute(machineData,
             		(updatedTileState) -> this.finishFunction(updatedTileState, operation,c,e)
             ),
-            operation.startTime.getValue(tileState),
+            operation.startTime.getValue(machineData.getPDC()),
             operation.ticksDuration, //TODO: Tiempo de tick personalizable
             20L // Intervalo de ejecución, por ejemplo, 20 ticks = 1 segundo
         );
     }
     
-    private void finishFunction(TileState tileState, BlockOperation operation, Long fullCycles, Long excess) {
-    	operation.startTime.setValue(tileState, 0L);
-    	operation.onFinish.finish(tileState, fullCycles, excess);
+    private void finishFunction(IMachineData machineData, BlockOperation operation, Long fullCycles, Long excess) {
+    	operation.startTime.setValue(machineData.getPDC(), 0L);
+    	machineData.update();
+    	operation.onFinish.finish(machineData, fullCycles, excess);
     }
 }
 

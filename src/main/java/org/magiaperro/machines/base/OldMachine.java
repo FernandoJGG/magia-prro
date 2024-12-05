@@ -1,4 +1,7 @@
-package org.magiaperro.blocks.base;
+package org.magiaperro.machines.base;
+
+
+//TODO: Borrar este fichero
 
 //import java.util.Collections;
 //import java.util.List;

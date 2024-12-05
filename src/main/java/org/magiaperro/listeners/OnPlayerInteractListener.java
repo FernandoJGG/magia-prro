@@ -1,41 +1,46 @@
 package org.magiaperro.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.magiaperro.blocks.base.CustomBlock;
-import org.magiaperro.blocks.base.IBlockClickable;
 import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.IClickable;
+import org.magiaperro.machines.base.Machine;
+import org.magiaperro.machines.base.MachineBlock;
+import org.magiaperro.machines.base.MachineEntity;
+import org.magiaperro.machines.base.IMachineClickable;
 
 public class OnPlayerInteractListener implements Listener {
     
     // Escucha el evento de interacción del jugador
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        EquipmentSlot[] hands = new EquipmentSlot[]{EquipmentSlot.HAND,  EquipmentSlot.OFF_HAND};
-
-        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+    	//Verifica que se haya hecho click derecho
+        if (event.getAction().isRightClick()) {
+            Player player = event.getPlayer();
+            EquipmentSlot[] hands = new EquipmentSlot[]{EquipmentSlot.HAND,  EquipmentSlot.OFF_HAND};
+            
         	Block block = event.getClickedBlock();
     		if(block != null && block.getState() != null && block.getState() instanceof TileState) {
-    			TileState tilestate = (TileState) block.getState();
-            	IBlockClickable clickedBlock = this.getClickableBlock(tilestate);
+    			TileState tileState = (TileState) block.getState();
+            	IMachineClickable clickedBlock = this.getClickableBlock(tileState);
             	if (clickedBlock != null) {
             		if(!player.isSneaking()) {
-	            		clickedBlock.onRightClick(event, tilestate);
+	            		clickedBlock.onRightClick(event, new MachineBlock(tileState));
 	                    event.setCancelled(true);
 	            		return;
             		}
             		else if(!event.isBlockInHand()) {
 	                    event.setCancelled(true);
-	            		return;
+	                    //return;
             		}
             	}
     		}
@@ -48,6 +53,25 @@ public class OnPlayerInteractListener implements Listener {
         		}
         	}
         }
+    }
+    @EventHandler
+    private void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
+    	if(event.getHand().equals(EquipmentSlot.HAND)) {
+    		Entity targetEntity = event.getRightClicked();
+    		Player player = event.getPlayer();
+            Bukkit.getLogger().info("Se llama al evento");
+            if (targetEntity != null) {
+           		IMachineClickable clickedEntity = this.getClickableEntity(targetEntity);
+    	       	if (clickedEntity != null) {
+    	       		if(!player.isSneaking()) {
+    	       			clickedEntity.onRightClick(event, new MachineEntity(targetEntity));
+    	                event.setCancelled(true);
+    	           		return;
+    	       		}
+    	       		event.setCancelled(true);
+    	       	}
+            }
+    	}
     }
     
 //    private CustomItem hasCustomItemOnHand(Player player, EquipmentSlot hand) {
@@ -66,11 +90,21 @@ public class OnPlayerInteractListener implements Listener {
     	return null;
     }
     
-    private IBlockClickable getClickableBlock(TileState tileState) {
+    private IMachineClickable getClickableBlock(TileState tileState) {
     	if(tileState != null) {
-    		CustomBlock customBlock = CustomBlock.fromTileState(tileState);
-    		if (customBlock != null && customBlock instanceof IBlockClickable) {
-        		return (IBlockClickable) customBlock;
+    		Machine machine = Machine.fromPDC(tileState.getPersistentDataContainer());
+    		if (machine != null && machine instanceof IMachineClickable) {
+        		return (IMachineClickable) machine;
+    		}
+    	}
+    	return null;
+    }
+    
+    private IMachineClickable getClickableEntity(Entity entity) {
+    	if(entity != null) {
+    		Machine machine = Machine.fromPDC(entity.getPersistentDataContainer());
+    		if (machine != null && machine instanceof IMachineClickable) {
+        		return (IMachineClickable) machine;
     		}
     	}
     	return null;

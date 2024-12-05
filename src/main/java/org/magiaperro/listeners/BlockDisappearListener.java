@@ -13,7 +13,8 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.magiaperro.blocks.base.CustomBlock;
+import org.magiaperro.machines.base.Machine;
+import org.magiaperro.machines.base.MachineBlock;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 
@@ -22,7 +23,8 @@ public class BlockDisappearListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 	    boolean isCustom = handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_BREAK);
 	    if (isCustom) {
-	        event.setDropItems(false);
+//	        event.setDropItems(false);
+            event.getBlock().setType(Material.AIR, false);
 	    }
 	}
 	
@@ -30,7 +32,8 @@ public class BlockDisappearListener implements Listener {
 	public void onBlockDestroy(BlockDestroyEvent event) {
 	    boolean isCustom = handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_DESTROY);
 	    if (isCustom) {
-	        event.setWillDrop(false);
+//	        event.setWillDrop(false);
+            event.getBlock().setType(Material.AIR, false);
 	    }
 	}
 	
@@ -56,7 +59,10 @@ public class BlockDisappearListener implements Listener {
 	
 	@EventHandler
 	public void onBlockBurn(BlockBurnEvent event) {
-	    handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_BURN);
+		boolean isCustom = handleBlockDisappear(event.getBlock(), BlockDisappearReason.BLOCK_BURN);
+        if (isCustom) {
+            event.getBlock().setType(Material.AIR, false);
+        }
 	}
 	
 	@EventHandler
@@ -89,10 +95,10 @@ public class BlockDisappearListener implements Listener {
         
         if (state != null && state instanceof TileState) {
             TileState tileState = (TileState) state;
-            CustomBlock customBlock = CustomBlock.fromTileState(tileState);
+            Machine machine = Machine.fromPDC(tileState.getPersistentDataContainer());
             
-            if (customBlock != null) {
-                customBlock.onBlockDisappear(tileState);
+            if (machine != null) {
+                machine.onDisappear(new MachineBlock(tileState));
                 return true;
             }
         }

@@ -62,6 +62,7 @@ public class PersistentGui extends BaseGui {
 				event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 			return;
 		}
+		Bukkit.getLogger().info("Llega al evento");
         
 		boolean isPersistent = isPersistentSlot(event.getRawSlot());
 		if(!isPersistent) {
@@ -73,7 +74,10 @@ public class PersistentGui extends BaseGui {
 					&& isOutputSlot(event.getRawSlot())) {
 	        	event.setCancelled(true);
 	        }
+			Bukkit.getLogger().info("Llega al if");
+			// Al proximo tick para tener el inventario actualizado
 			Bukkit.getScheduler().runTask(Main.instance, () -> {
+				Bukkit.getLogger().info("Llega al runnable");
 	            this.onPlaceItem.onPlace();
 	        });
 		}

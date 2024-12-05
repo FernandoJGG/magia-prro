@@ -35,9 +35,9 @@ public class OfflineTimedOperation extends BaseOperation {
         Long currentTicks = Bukkit.getWorld("world").getFullTime();
     	Long endTicks = this.startTicks + duration;
 
-    	Bukkit.getLogger().info("Ciclo " + this.cycle);
-    	Bukkit.getLogger().info("Ticks current " + currentTicks);
-    	Bukkit.getLogger().info("Ticks end " + endTicks);
+//    	Bukkit.getLogger().info("Ciclo " + this.cycle);
+//    	Bukkit.getLogger().info("Ticks current " + currentTicks);
+//    	Bukkit.getLogger().info("Ticks end " + endTicks);
     	
         if (endTicks > currentTicks) {
             super.runCycle();
@@ -48,7 +48,7 @@ public class OfflineTimedOperation extends BaseOperation {
         Long fullCycles = (elapsedTicks / duration);
         Long remainingTicks = (elapsedTicks % duration);
     	
-    	Bukkit.getLogger().info("Ticks pasados " + elapsedTicks);
+//    	Bukkit.getLogger().info("Ticks pasados " + elapsedTicks);
         
     	this.finishFunction.finish(fullCycles, remainingTicks);
     	this.unregisterAndCancel();

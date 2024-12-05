@@ -32,9 +32,9 @@ public class BaseConcurrentGuiFactory implements ConcurrentGuiFactory {
 	}
 
 
-	public BaseConcurrentGuiFactory setSaveStrategy(SaveStrategy strategy) {
-		this.strategy = strategy;
-		return this;
-	}
+//	public BaseConcurrentGuiFactory setSaveStrategy(SaveStrategy strategy) {
+//		this.strategy = strategy;
+//		return this;
+//	}
 
 }
