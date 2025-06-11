@@ -10,10 +10,13 @@ import org.magiaperro.helpers.TileStateHelper;
 import org.magiaperro.helpers.pdc.PDCProperty;
 import org.magiaperro.machines.base.IMachineData;
 import org.magiaperro.machines.base.Machine;
+import org.magiaperro.main.Main;
 import org.magiaperro.operations.OperationHandler;
 import org.magiaperro.operations.OfflineTimedOperation;
 
-
+// TODO Añadir nuevos delegates para online/auras y no solo timed
+// Quizas renombrar la semantica para que estos handlers sirvan para mobs custom
+// IMachineData -> ICustomEntityData o IMedi(terranea)EntityData
 public class TimedOperationDelegate {
 
     // Mapa de operaciones registradas, cada una identificada por su ID
@@ -87,7 +90,7 @@ public class TimedOperationDelegate {
      * Inicia una nueva operacion que inicia en el instante actual
      */
     public void startOperation(IMachineData machineData, String id) {
-        this.startOperation(machineData, id, Bukkit.getWorld("world").getFullTime());
+        this.startOperation(machineData, id, Main.getWorldFullTime());
     }
     
 
@@ -137,7 +140,7 @@ public class TimedOperationDelegate {
         BlockOperation operation = operations.get(id);
         if (operation == null) return;
 
-        Long startInstant = Bukkit.getWorld("world").getFullTime() - offset;
+        Long startInstant = Main.getWorldFullTime() - offset;
         operation.startTime.setValue(machineData.getPDC(), startInstant);
         machineData.update();
 

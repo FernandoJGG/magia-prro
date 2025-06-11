@@ -1,0 +1,425 @@
+[1mdiff --git a/src/main/java/org/magiaperro/entities/projectiles/package-info.java b/src/main/java/org/magiaperro/entities/projectiles/package-info.java[m
+[1mdeleted file mode 100644[m
+[1mindex 0db6377..0000000[m
+[1m--- a/src/main/java/org/magiaperro/entities/projectiles/package-info.java[m
+[1m+++ /dev/null[m
+[36m@@ -1 +0,0 @@[m
+[31m-package org.magiaperro.entities.projectiles;[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/org/magiaperro/helpers/InventoryHelper.java b/src/main/java/org/magiaperro/helpers/InventoryHelper.java[m
+[1mindex 95d195d..798a772 100644[m
+[1m--- a/src/main/java/org/magiaperro/helpers/InventoryHelper.java[m
+[1m+++ b/src/main/java/org/magiaperro/helpers/InventoryHelper.java[m
+[36m@@ -3,6 +3,7 @@[m [mpackage org.magiaperro.helpers;[m
+ import java.util.Set;[m
+ [m
+ import org.bukkit.event.inventory.InventoryAction;[m
+[32m+[m[32mimport org.bukkit.inventory.EquipmentSlot;[m
+ [m
+ public class InventoryHelper {[m
+ 	private static final Set<InventoryAction> putActions = Set.of([m
+[36m@@ -14,6 +15,11 @@[m [mpublic class InventoryHelper {[m
+ 			//InventoryAction.MOVE_TO_OTHER_INVENTORY[m
+ 	);[m
+ 	[m
+[32m+[m	[32m// como funcion o como atributo, nose[m
+[32m+[m	[32mpublic static EquipmentSlot[] hands() {[m
+[32m+[m		[32mreturn new EquipmentSlot[]{EquipmentSlot.HAND,  EquipmentSlot.OFF_HAND};[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+ 	public static boolean isPutAction(InventoryAction action) {[m
+ 		return putActions.contains(action);[m
+ 	}[m
+[1mdiff --git a/src/main/java/org/magiaperro/items/ItemRegistry.java b/src/main/java/org/magiaperro/items/ItemRegistry.java[m
+[1mindex 7a38c4c..8a93390 100644[m
+[1m--- a/src/main/java/org/magiaperro/items/ItemRegistry.java[m
+[1m+++ b/src/main/java/org/magiaperro/items/ItemRegistry.java[m
+[36m@@ -4,7 +4,11 @@[m [mimport java.util.Arrays;[m
+ import java.util.HashMap;[m
+ import java.util.Map;[m
+ [m
+[32m+[m[32mimport org.bukkit.Color;[m
+ import org.bukkit.Material;[m
+[32m+[m[32mimport org.bukkit.potion.PotionEffect;[m
+[32m+[m[32mimport org.bukkit.potion.PotionEffectType;[m
+[32m+[m[32mimport org.magiaperro.items.base.BasePotion;[m
+ import org.magiaperro.items.base.CustomItem;[m
+ import org.magiaperro.items.base.ItemID;[m
+ import org.magiaperro.items.base.PlaceableItem;[m
+[36m@@ -33,11 +37,22 @@[m [mpublic class ItemRegistry {[m
+         PlaceableItem horno = new PlaceableItem(ItemID.AlloyFurnace, "Horno de aleación", [m
+         		Material.FURNACE, Arrays.asList("Un horno que hace aleaciones :V"), [m
+         		MachineID.AlloyFurnace);[m
+[32m+[m[32m        PlaceableItem destileria = new PlaceableItem(ItemID.Brewery, "Destilería",[m[41m [m
+[32m+[m[41m        [m		[32mMaterial.BARREL, Arrays.asList("alcohool"),[m[41m [m
+[32m+[m[41m        [m		[32mMachineID.Brewery);[m
+         [m
+         CustomItem bronzeIngot = new CustomItem(ItemID.BronzeIngot, "Lingote de bronce", [m
+         		Material.COPPER_INGOT, Arrays.asList()); [m
+         CustomItem leadOre = new CustomItem(ItemID.LeadOre, "Mena de estaño", [m
+[31m-                		Material.RAW_IRON, Arrays.asList());[m
+[32m+[m[32m                Material.RAW_IRON, Arrays.asList());[m
+[32m+[m[41m        [m
+[32m+[m[32m        CustomItem birra = new BasePotion(ItemID.Beer, "Cerveza",[m[41m [m
+[32m+[m[41m        [m		[32mColor.fromRGB(251, 177, 23), Arrays.asList(),[m
+[32m+[m[41m        [m		[32mnew PotionEffect[] {[m[41m [m
+[32m+[m[41m        [m				[32mnew PotionEffect(PotionEffectType.NAUSEA, 400, 0, false, false),[m
+[32m+[m						[32mnew PotionEffect(PotionEffectType.BLINDNESS, 400, 0, false, false)[m[41m [m
+[32m+[m				[32m});[m
+[32m+[m[41m        [m
+ [m
+     }[m
+     [m
+[1mdiff --git a/src/main/java/org/magiaperro/items/base/ItemID.java b/src/main/java/org/magiaperro/items/base/ItemID.java[m
+[1mindex 37f8e06..24ea63b 100644[m
+[1m--- a/src/main/java/org/magiaperro/items/base/ItemID.java[m
+[1m+++ b/src/main/java/org/magiaperro/items/base/ItemID.java[m
+[36m@@ -8,7 +8,9 @@[m [mpublic enum ItemID {[m
+ 	CofreMagico(4),[m
+ 	AlloyFurnace(5),[m
+ 	BronzeIngot(6),[m
+[31m-	LeadOre(7);[m
+[32m+[m	[32mLeadOre(7),[m
+[32m+[m	[32mBeer(8),[m
+[32m+[m	[32mBrewery(9);[m
+ 	[m
+ 	private final int index;[m
+ [m
+[1mdiff --git a/src/main/java/org/magiaperro/listeners/OnPlayerInteractListener.java b/src/main/java/org/magiaperro/listeners/OnPlayerInteractListener.java[m
+[1mindex e6e116a..fca203a 100644[m
+[1m--- a/src/main/java/org/magiaperro/listeners/OnPlayerInteractListener.java[m
+[1m+++ b/src/main/java/org/magiaperro/listeners/OnPlayerInteractListener.java[m
+[36m@@ -9,10 +9,12 @@[m [mimport org.bukkit.event.EventHandler;[m
+ import org.bukkit.event.Listener;[m
+ import org.bukkit.event.player.PlayerInteractEntityEvent;[m
+ import org.bukkit.event.player.PlayerInteractEvent;[m
+[32m+[m[32mimport org.bukkit.event.player.PlayerItemConsumeEvent;[m
+ import org.bukkit.inventory.EquipmentSlot;[m
+ import org.bukkit.inventory.ItemStack;[m
+ import org.magiaperro.items.base.CustomItem;[m
+ import org.magiaperro.items.base.IClickable;[m
+[32m+[m[32mimport org.magiaperro.items.base.IConsumable;[m
+ import org.magiaperro.machines.base.Machine;[m
+ import org.magiaperro.machines.base.MachineBlock;[m
+ import org.magiaperro.machines.base.MachineEntity;[m
+[36m@@ -73,6 +75,16 @@[m [mpublic class OnPlayerInteractListener implements Listener {[m
+             }[m
+     	}[m
+     }[m
+[32m+[m[32m    @EventHandler[m
+[32m+[m[32m    public void onItemConsume(PlayerItemConsumeEvent event) {[m
+[32m+[m[32m        ItemStack consumedItem = event.getItem();[m
+[32m+[m
+[32m+[m[41m    [m	[32mCustomItem customItem = CustomItem.fromItemStack(consumedItem);[m
+[32m+[m[41m    [m	[32mif (customItem != null && customItem instanceof IConsumable) {[m
+[32m+[m[41m    [m		[32mIConsumable consumable = (IConsumable) customItem;[m[41m [m
+[32m+[m[41m    [m		[32mconsumable.onConsume(event);[m
+[32m+[m[41m    [m	[32m}[m
+[32m+[m[32m    }[m
+     [m
+ //    private CustomItem hasCustomItemOnHand(Player player, EquipmentSlot hand) {[m
+ //    	ItemStack itemOnHand = player.getInventory().getItem(hand);[m
+[1mdiff --git a/src/main/java/org/magiaperro/machines/AlloyFurnace.java b/src/main/java/org/magiaperro/machines/AlloyFurnace.java[m
+[1mindex ff1a36d..669258b 100644[m
+[1m--- a/src/main/java/org/magiaperro/machines/AlloyFurnace.java[m
+[1m+++ b/src/main/java/org/magiaperro/machines/AlloyFurnace.java[m
+[36m@@ -51,12 +51,11 @@[m [mpublic class AlloyFurnace extends InventoryMachine implements IMachineLoadable {[m
+ 		super(id, ItemID.AlloyFurnace, size);[m
+         this.operationDelegate = new TimedOperationDelegate();[m
+ [m
+[31m-        // Registramos la operación "burn"[m
+         operationDelegate.registerOperation([m
+         	SMELT,[m
+             burnTicks,[m
+[31m-            this::onBurn,   // Función onBurn[m
+[31m-            this::onFinish  // Función onFinish[m
+[32m+[m[32m            this::onBurn,[m[41m [m
+[32m+[m[32m            this::onFinish[m
+         );[m
+ 	}[m
+ 	[m
+[1mdiff --git a/src/main/java/org/magiaperro/machines/MachineRegistry.java b/src/main/java/org/magiaperro/machines/MachineRegistry.java[m
+[1mindex 4dc6e66..522109e 100644[m
+[1m--- a/src/main/java/org/magiaperro/machines/MachineRegistry.java[m
+[1m+++ b/src/main/java/org/magiaperro/machines/MachineRegistry.java[m
+[36m@@ -14,6 +14,7 @@[m [mpublic class MachineRegistry {[m
+     	CustomCrafter crafter = new CustomCrafter(MachineID.CustomCrafter);[m
+     	CofreMagico cofreMagico = new CofreMagico(MachineID.CofreMagico);[m
+     	AlloyFurnace horno = new AlloyFurnace(MachineID.AlloyFurnace);[m
+[32m+[m[41m    [m	[32mBrewery brewery = new Brewery(MachineID.Brewery);[m
+     }[m
+     [m
+     public static void registerMachine(Machine machine) {[m
+[1mdiff --git a/src/main/java/org/magiaperro/machines/base/InventoryMachine.java b/src/main/java/org/magiaperro/machines/base/InventoryMachine.java[m
+[1mindex ef4d702..8839330 100644[m
+[1m--- a/src/main/java/org/magiaperro/machines/base/InventoryMachine.java[m
+[1m+++ b/src/main/java/org/magiaperro/machines/base/InventoryMachine.java[m
+[36m@@ -4,7 +4,6 @@[m [mimport java.util.ArrayList;[m
+ import java.util.List;[m
+ import java.util.UUID;[m
+ [m
+[31m-import org.bukkit.Bukkit;[m
+ import org.bukkit.entity.HumanEntity;[m
+ import org.bukkit.inventory.ItemStack;[m
+ import org.magiaperro.gui.base.ConcurrentPersistentGui;[m
+[36m@@ -56,13 +55,11 @@[m [mpublic abstract class InventoryMachine extends Machine implements IMachineClicka[m
+ 	public ItemStack[] getInventoryFromMachine(IMachineData machineData) {[m
+ 		UUID guid = getGuidFromMachine(machineData);[m
+     	ConcurrentPersistentGui inventoryHolder = ConcurrentPersistentGui.getInventoryHolderFromGuid(guid);[m
+[31m-    	Bukkit.getLogger().info("Se recupera del " + guid +" el inventory");[m
+[31m-    	if(inventoryHolder != null && inventoryHolder.getViewers().size() > 0) {[m
+[31m-    		Bukkit.getLogger().info("Se recuperan datos del inventario");[m
+[32m+[m[41m    	[m
+[32m+[m[41m    [m	[32mif(inventoryHolder != null /*&& inventoryHolder.getViewers().size() > 0*/) {[m
+     		return inventoryHolder.getPersistedItems();[m
+     	}[m
+     	else {[m
+[31m-    		Bukkit.getLogger().info("Se recuperan datos del PDC");[m
+     		return inventory.getValue(machineData.getPDC());[m
+     	}[m
+     }[m
+[36m@@ -70,7 +67,7 @@[m [mpublic abstract class InventoryMachine extends Machine implements IMachineClicka[m
+ 	public void setItem(IMachineData machineData, ItemStack item, int index) {[m
+     	UUID guid = getGuidFromMachine(machineData);[m
+     	ConcurrentPersistentGui inventoryHolder = ConcurrentPersistentGui.getInventoryHolderFromGuid(guid);[m
+[31m-    	if(inventoryHolder != null && inventoryHolder.getViewers().size() > 0) {[m
+[32m+[m[41m    [m	[32mif(inventoryHolder != null /*&& inventoryHolder.getViewers().size() > 0*/) {[m
+     		inventoryHolder.setPersistibleSlot(item, index);[m
+     	}[m
+     	else {[m
+[1mdiff --git a/src/main/java/org/magiaperro/machines/base/Machine.java b/src/main/java/org/magiaperro/machines/base/Machine.java[m
+[1mindex d7ed939..ba9db6b 100644[m
+[1m--- a/src/main/java/org/magiaperro/machines/base/Machine.java[m
+[1m+++ b/src/main/java/org/magiaperro/machines/base/Machine.java[m
+[36m@@ -17,7 +17,9 @@[m [mimport com.destroystokyo.paper.profile.PlayerProfile;[m
+ import com.destroystokyo.paper.profile.ProfileProperty;[m
+ import com.jeff_media.morepersistentdatatypes.DataType;[m
+ [m
+[31m-//TODO: Remodelar por CustomMachine[m
+[32m+[m
+[32m+[m[32m//TODO: Mover el OperationDelegator a la base. Da igual si no tiene operacion.[m
+[32m+[m[32m//HECHO? --TODO: Remodelar por CustomMachine--[m
+ //Una maquina puede ser tanto un tilestate, una entidad, cualquier cosa que incluya un PDC[m
+ //Una posible manera seria crear una clase IPersistible, que luego implementaria con [m
+ //IPersistibleBlock, IPersistibleEntity, cada una teniendo como parametro su TileState, Entity, etc[m
+[36m@@ -80,7 +82,9 @@[m [mpublic abstract class Machine {[m
+     public void onDisappear(IMachineData machineData) {[m
+     	CustomItem itemDrop  = CustomItem.fromId(this.dropItemId);[m
+     	[m
+[31m-    	machineData.getWorld().dropItemNaturally(machineData.getLocation(), itemDrop.buildItemStack());[m
+[32m+[m[41m    [m	[32mif(this.dropItemId != null) {[m
+[32m+[m[41m        [m	[32mmachineData.getWorld().dropItemNaturally(machineData.getLocation(), itemDrop.buildItemStack());[m
+[32m+[m[41m    [m	[32m}[m
+     }[m
+ [m
+     public static UUID getGuidFromMachine(IMachineData machineData) {[m
+[1mdiff --git a/src/main/java/org/magiaperro/machines/base/MachineID.java b/src/main/java/org/magiaperro/machines/base/MachineID.java[m
+[1mindex a5f80f7..884dc2a 100644[m
+[1m--- a/src/main/java/org/magiaperro/machines/base/MachineID.java[m
+[1m+++ b/src/main/java/org/magiaperro/machines/base/MachineID.java[m
+[36m@@ -3,7 +3,8 @@[m [mpackage org.magiaperro.machines.base;[m
+ public enum MachineID {[m
+ 	CustomCrafter(0),[m
+ 	CofreMagico(1),[m
+[31m-	AlloyFurnace(2);[m
+[32m+[m	[32mAlloyFurnace(2),[m
+[32m+[m	[32mBrewery(3);[m
+ 	[m
+ 	private final int index;[m
+ [m
+[1mdiff --git a/src/main/java/org/magiaperro/machines/base/delegators/TimedOperationDelegate.java b/src/main/java/org/magiaperro/machines/base/delegators/TimedOperationDelegate.java[m
+[1mindex 834d8ec..5b2e1f0 100644[m
+[1m--- a/src/main/java/org/magiaperro/machines/base/delegators/TimedOperationDelegate.java[m
+[1m+++ b/src/main/java/org/magiaperro/machines/base/delegators/TimedOperationDelegate.java[m
+[36m@@ -10,10 +10,13 @@[m [mimport org.magiaperro.helpers.TileStateHelper;[m
+ import org.magiaperro.helpers.pdc.PDCProperty;[m
+ import org.magiaperro.machines.base.IMachineData;[m
+ import org.magiaperro.machines.base.Machine;[m
+[32m+[m[32mimport org.magiaperro.main.Main;[m
+ import org.magiaperro.operations.OperationHandler;[m
+ import org.magiaperro.operations.OfflineTimedOperation;[m
+ [m
+[31m-[m
+[32m+[m[32m// TODO Añadir nuevos delegates para online/auras y no solo timed[m
+[32m+[m[32m// Quizas renombrar la semantica para que estos handlers sirvan para mobs custom[m
+[32m+[m[32m// IMachineData -> ICustomEntityData o IMedi(terranea)EntityData[m
+ public class TimedOperationDelegate {[m
+ [m
+     // Mapa de operaciones registradas, cada una identificada por su ID[m
+[36m@@ -87,7 +90,7 @@[m [mpublic class TimedOperationDelegate {[m
+      * Inicia una nueva operacion que inicia en el instante actual[m
+      */[m
+     public void startOperation(IMachineData machineData, String id) {[m
+[31m-        this.startOperation(machineData, id, Bukkit.getWorld("world").getFullTime());[m
+[32m+[m[32m        this.startOperation(machineData, id, Main.getWorldFullTime());[m
+     }[m
+     [m
+ [m
+[36m@@ -137,7 +140,7 @@[m [mpublic class TimedOperationDelegate {[m
+         BlockOperation operation = operations.get(id);[m
+         if (operation == null) return;[m
+ [m
+[31m-        Long startInstant = Bukkit.getWorld("world").getFullTime() - offset;[m
+[32m+[m[32m        Long startInstant = Main.getWorldFullTime() - offset;[m
+         operation.startTime.setValue(machineData.getPDC(), startInstant);[m
+         machineData.update();[m
+ [m
+[1mdiff --git a/src/main/java/org/magiaperro/main/Keys.java b/src/main/java/org/magiaperro/main/Keys.java[m
+[1mindex 49259ec..7c727d9 100644[m
+[1m--- a/src/main/java/org/magiaperro/main/Keys.java[m
+[1m+++ b/src/main/java/org/magiaperro/main/Keys.java[m
+[36m@@ -4,6 +4,9 @@[m [mimport org.bukkit.NamespacedKey;[m
+ [m
+ // TODO: Quizas reorientar a simplemente ser una coleccion de strings para IPDCProperty[m
+ public class Keys {[m
+[32m+[m	[32m// Para obtener cosas como el tiempo de servidor[m
+[32m+[m	[32mpublic static final String MAIN_WORLD = "world";[m
+[32m+[m[41m	[m
+ 	// Registries[m
+ 	public static final NamespacedKey CUSTOM_ITEM_ID = new NamespacedKey(Main.instance, "custom_item_id");[m
+     public static final NamespacedKey SELECTED_SPELL_ID = new NamespacedKey(Main.instance, "selected_spell_id");[m
+[1mdiff --git a/src/main/java/org/magiaperro/main/Main.java b/src/main/java/org/magiaperro/main/Main.java[m
+[1mindex ba5cf6f..6dde500 100644[m
+[1m--- a/src/main/java/org/magiaperro/main/Main.java[m
+[1m+++ b/src/main/java/org/magiaperro/main/Main.java[m
+[36m@@ -54,4 +54,8 @@[m [mpublic class Main extends JavaPlugin {[m
+         }[m
+         return false;[m
+     }[m
+[32m+[m[41m    [m
+[32m+[m[32m    public static Long getWorldFullTime() {[m
+[32m+[m[41m    [m	[32mreturn Bukkit.getWorld(Keys.MAIN_WORLD).getFullTime();[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/org/magiaperro/operations/CastingHandler.java b/src/main/java/org/magiaperro/operations/CastingHandler.java[m
+[1mindex e68aa74..18a80d7 100644[m
+[1m--- a/src/main/java/org/magiaperro/operations/CastingHandler.java[m
+[1m+++ b/src/main/java/org/magiaperro/operations/CastingHandler.java[m
+[36m@@ -1,6 +1,9 @@[m
+ package org.magiaperro.operations;[m
+ [m
+[31m-public class CastingHandler extends OperationHandler<OfflineTimedOperation> {[m
+[32m+[m[32m/**[m
+[32m+[m[32m * Singleton para casteos de entidades, como magias o items.[m
+[32m+[m[32m */[m
+[32m+[m[32mpublic class CastingHandler extends OperationHandler<OnlineTimedOperation> {[m
+ 	[m
+ 	private static CastingHandler casters;[m
+ 	[m
+[1mdiff --git a/src/main/java/org/magiaperro/operations/OfflineTimedOperation.java b/src/main/java/org/magiaperro/operations/OfflineTimedOperation.java[m
+[1mindex 0ea3af7..af9ef07 100644[m
+[1m--- a/src/main/java/org/magiaperro/operations/OfflineTimedOperation.java[m
+[1m+++ b/src/main/java/org/magiaperro/operations/OfflineTimedOperation.java[m
+[36m@@ -1,30 +1,28 @@[m
+ package org.magiaperro.operations;[m
+ [m
+[31m-import org.bukkit.Bukkit;[m
+[32m+[m[32mimport org.magiaperro.main.Main;[m
+ [m
+ /**[m
+[31m- * Operación con un tiempo de finalización, que se calcula a traves del tiempo del mundo[m
+[32m+[m[32m * Operación con un tiempo de finalización, que se calcula a través del tiempo del mundo.[m
+  * Por lo tanto, si se reanuda con el instante de inicio original, podrá calcular el[m
+[31m- * tiempo transcurrido mientras la operacion estaba pausada (Offline)[m
+[32m+[m[32m * tiempo transcurrido mientras la operacion estaba pausada (Offline).[m
+  */[m
+ public class OfflineTimedOperation extends BaseOperation {[m
+ [m
+[31m-    protected final OperationFinishConsumer finishFunction;[m
+[32m+[m[32m    protected final OfflineOpFinishConsumer finishFunction;[m
+     [m
+     // Instante en el que se inicia la operación, en ticks de mundo[m
+     protected final Long startTicks;[m
+     protected final Long duration;[m
+ [m
+[31m-    public OfflineTimedOperation(OperationConsumer continueFunction, OperationFinishConsumer finishFunction, [m
+[32m+[m[32m    public OfflineTimedOperation(OperationConsumer continueFunction, OfflineOpFinishConsumer finishFunction,[m[41m [m
+     		Long startTicks, Long duration, Long ticksPerCycle) {[m
+     	super(continueFunction, ticksPerCycle);[m
+[31m-    	[m
+[31m-    	Bukkit.getLogger().info("desde offlineTimedOperation llegan " + startTicks);[m
+[32m+[m[41m    [m
+     	if(startTicks <= 0) {[m
+     		throw new IllegalArgumentException("Parámetro startTicks no válido.");[m
+     	}[m
+ [m
+[31m-    	// El instante se divide en 20 para que cuadre con los ticks[m
+ 		this.startTicks = startTicks;[m
+ 		this.finishFunction = finishFunction;[m
+ 		this.duration = duration;[m
+[36m@@ -32,7 +30,7 @@[m [mpublic class OfflineTimedOperation extends BaseOperation {[m
+ [m
+     @Override[m
+     protected void runCycle() {[m
+[31m-        Long currentTicks = Bukkit.getWorld("world").getFullTime();[m
+[32m+[m[32m        Long currentTicks = Main.getWorldFullTime();[m
+     	Long endTicks = this.startTicks + duration;[m
+ [m
+ //    	Bukkit.getLogger().info("Ciclo " + this.cycle);[m
+[1mdiff --git a/src/main/java/org/magiaperro/operations/OperationFinishConsumer.java b/src/main/java/org/magiaperro/operations/OperationFinishConsumer.java[m
+[1mdeleted file mode 100644[m
+[1mindex 4be83f9..0000000[m
+[1m--- a/src/main/java/org/magiaperro/operations/OperationFinishConsumer.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,6 +0,0 @@[m
+[31m-package org.magiaperro.operations;[m
+[31m-[m
+[31m-@FunctionalInterface[m
+[31m-public interface OperationFinishConsumer {[m
+[31m-    void finish(Long fullCycles, Long excessTime);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/org/magiaperro/operations/OperationHandler.java b/src/main/java/org/magiaperro/operations/OperationHandler.java[m
+[1mindex ce9f0ab..c44e7f4 100644[m
+[1m--- a/src/main/java/org/magiaperro/operations/OperationHandler.java[m
+[1m+++ b/src/main/java/org/magiaperro/operations/OperationHandler.java[m
+[36m@@ -17,6 +17,7 @@[m [mpublic class OperationHandler<T extends BaseOperation> {[m
+ 	}[m
+     [m
+     public boolean startOperation(UUID guid, T operation) {[m
+[32m+[m[41m    [m	[32moperation.setCaller(guid, this);[m
+         boolean put = operations.putIfAbsent(guid, operation) == null;[m
+         if(put) {[m
+         	operation.startOperation();[m
+[36m@@ -41,6 +42,8 @@[m [mpublic class OperationHandler<T extends BaseOperation> {[m
+     }[m
+     [m
+     public boolean restartOperation(UUID guid, T operation) {[m
+[32m+[m[41m    [m	[32moperation.setCaller(guid, this);[m
+[32m+[m[41m    	[m
+         this.endOperation(guid);[m
+         this.startOperation(guid, operation);[m
+         [m
+[1mdiff --git a/src/main/java/org/magiaperro/operations/RealtimeTimedOperation.java b/src/main/java/org/magiaperro/operations/RealtimeTimedOperation.java[m
+[1mindex 2c6ae28..3f4e0d8 100644[m
+[1m--- a/src/main/java/org/magiaperro/operations/RealtimeTimedOperation.java[m
+[1m+++ b/src/main/java/org/magiaperro/operations/RealtimeTimedOperation.java[m
+[36m@@ -11,12 +11,12 @@[m [mimport org.bukkit.Bukkit;[m
+ @Deprecated[m
+ public class RealtimeTimedOperation extends BaseOperation {[m
+ [m
+[31m-    protected final OperationFinishConsumer finishFunction;[m
+[32m+[m[32m    protected final OfflineOpFinishConsumer finishFunction;[m
+     [m
+     protected final Long startTicks;[m
+     protected final Long duration;[m
+ [m
+[31m-    public RealtimeTimedOperation(OperationConsumer continueFunction, OperationFinishConsumer finishFunction, [m
+[32m+[m[32m    public RealtimeTimedOperation(OperationConsumer continueFunction, OfflineOpFinishConsumer finishFunction,[m[41m [m
+     		Long startInstant, Long duration, Long ticksPerCycle) {[m
+     	super(continueFunction, ticksPerCycle);[m
+     	[m
+[1mdiff --git a/src/main/java/org/magiaperro/recipes/crafter/CrafterRecipeManager.java b/src/main/java/org/magiaperro/recipes/crafter/CrafterRecipeManager.java[m
+[1mindex ae2f5e6..014f2ee 100644[m
+[1m--- a/src/main/java/org/magiaperro/recipes/crafter/CrafterRecipeManager.java[m
+[1m+++ b/src/main/java/org/magiaperro/recipes/crafter/CrafterRecipeManager.java[m
+[36m@@ -11,7 +11,8 @@[m [mimport org.magiaperro.recipes.base.RecipeItem;[m
+ import java.util.ArrayList;[m
+ import java.util.Iterator;[m
+ [m
+[31m-// TODO: Desechamos la idea, ya hay recetas custom en bukkit vanilla[m
+[32m+[m[32m// TODO: Adaptar como abstract para recetas de maquinas custom. Grid tamaño personalizable[m
+[32m+[m
+ public class CrafterRecipeManager {[m
+ [m
+     private static List<CrafterRecipe> recipes = new ArrayList<>();[m

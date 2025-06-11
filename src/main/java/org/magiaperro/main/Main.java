@@ -54,4 +54,8 @@ public class Main extends JavaPlugin {
         }
         return false;
     }
+    
+    public static Long getWorldFullTime() {
+    	return Bukkit.getWorld(Keys.MAIN_WORLD).getFullTime();
+    }
 }

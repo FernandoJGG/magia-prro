@@ -3,7 +3,8 @@ package org.magiaperro.machines.base;
 public enum MachineID {
 	CustomCrafter(0),
 	CofreMagico(1),
-	AlloyFurnace(2);
+	AlloyFurnace(2),
+	Brewery(3);
 	
 	private final int index;
 

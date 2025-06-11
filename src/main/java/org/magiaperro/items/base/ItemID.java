@@ -8,7 +8,9 @@ public enum ItemID {
 	CofreMagico(4),
 	AlloyFurnace(5),
 	BronzeIngot(6),
-	LeadOre(7);
+	LeadOre(7),
+	Beer(8),
+	Brewery(9);
 	
 	private final int index;
 

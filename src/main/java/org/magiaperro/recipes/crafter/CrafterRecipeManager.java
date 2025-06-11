@@ -11,7 +11,8 @@ import org.magiaperro.recipes.base.RecipeItem;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-// TODO: Desechamos la idea, ya hay recetas custom en bukkit vanilla
+// TODO: Adaptar como abstract para recetas de maquinas custom. Grid tamaño personalizable
+
 public class CrafterRecipeManager {
 
     private static List<CrafterRecipe> recipes = new ArrayList<>();

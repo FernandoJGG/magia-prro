@@ -51,12 +51,11 @@ public class AlloyFurnace extends InventoryMachine implements IMachineLoadable {
 		super(id, ItemID.AlloyFurnace, size);
         this.operationDelegate = new TimedOperationDelegate();
 
-        // Registramos la operación "burn"
         operationDelegate.registerOperation(
         	SMELT,
             burnTicks,
-            this::onBurn,   // Función onBurn
-            this::onFinish  // Función onFinish
+            this::onBurn, 
+            this::onFinish
         );
 	}
 	

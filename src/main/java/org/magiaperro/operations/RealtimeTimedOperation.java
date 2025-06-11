@@ -11,12 +11,12 @@ import org.bukkit.Bukkit;
 @Deprecated
 public class RealtimeTimedOperation extends BaseOperation {
 
-    protected final OperationFinishConsumer finishFunction;
+    protected final OfflineOpFinishConsumer finishFunction;
     
     protected final Long startTicks;
     protected final Long duration;
 
-    public RealtimeTimedOperation(OperationConsumer continueFunction, OperationFinishConsumer finishFunction, 
+    public RealtimeTimedOperation(OperationConsumer continueFunction, OfflineOpFinishConsumer finishFunction, 
     		Long startInstant, Long duration, Long ticksPerCycle) {
     	super(continueFunction, ticksPerCycle);
     	

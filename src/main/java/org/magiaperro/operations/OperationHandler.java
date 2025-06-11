@@ -17,6 +17,7 @@ public class OperationHandler<T extends BaseOperation> {
 	}
     
     public boolean startOperation(UUID guid, T operation) {
+    	operation.setCaller(guid, this);
         boolean put = operations.putIfAbsent(guid, operation) == null;
         if(put) {
         	operation.startOperation();
@@ -41,6 +42,8 @@ public class OperationHandler<T extends BaseOperation> {
     }
     
     public boolean restartOperation(UUID guid, T operation) {
+    	operation.setCaller(guid, this);
+    	
         this.endOperation(guid);
         this.startOperation(guid, operation);
         

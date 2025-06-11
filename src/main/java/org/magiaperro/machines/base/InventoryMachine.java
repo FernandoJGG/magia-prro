@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.magiaperro.gui.base.ConcurrentPersistentGui;
@@ -56,13 +55,11 @@ public abstract class InventoryMachine extends Machine implements IMachineClicka
 	public ItemStack[] getInventoryFromMachine(IMachineData machineData) {
 		UUID guid = getGuidFromMachine(machineData);
     	ConcurrentPersistentGui inventoryHolder = ConcurrentPersistentGui.getInventoryHolderFromGuid(guid);
-    	Bukkit.getLogger().info("Se recupera del " + guid +" el inventory");
-    	if(inventoryHolder != null && inventoryHolder.getViewers().size() > 0) {
-    		Bukkit.getLogger().info("Se recuperan datos del inventario");
+    	
+    	if(inventoryHolder != null /*&& inventoryHolder.getViewers().size() > 0*/) {
     		return inventoryHolder.getPersistedItems();
     	}
     	else {
-    		Bukkit.getLogger().info("Se recuperan datos del PDC");
     		return inventory.getValue(machineData.getPDC());
     	}
     }
@@ -70,7 +67,7 @@ public abstract class InventoryMachine extends Machine implements IMachineClicka
 	public void setItem(IMachineData machineData, ItemStack item, int index) {
     	UUID guid = getGuidFromMachine(machineData);
     	ConcurrentPersistentGui inventoryHolder = ConcurrentPersistentGui.getInventoryHolderFromGuid(guid);
-    	if(inventoryHolder != null && inventoryHolder.getViewers().size() > 0) {
+    	if(inventoryHolder != null /*&& inventoryHolder.getViewers().size() > 0*/) {
     		inventoryHolder.setPersistibleSlot(item, index);
     	}
     	else {

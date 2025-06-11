@@ -4,6 +4,9 @@ import org.bukkit.NamespacedKey;
 
 // TODO: Quizas reorientar a simplemente ser una coleccion de strings para IPDCProperty
 public class Keys {
+	// Para obtener cosas como el tiempo de servidor
+	public static final String MAIN_WORLD = "world";
+	
 	// Registries
 	public static final NamespacedKey CUSTOM_ITEM_ID = new NamespacedKey(Main.instance, "custom_item_id");
     public static final NamespacedKey SELECTED_SPELL_ID = new NamespacedKey(Main.instance, "selected_spell_id");

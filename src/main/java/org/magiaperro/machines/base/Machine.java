@@ -17,7 +17,9 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.jeff_media.morepersistentdatatypes.DataType;
 
-//TODO: Remodelar por CustomMachine
+
+//TODO: Mover el OperationDelegator a la base. Da igual si no tiene operacion.
+//HECHO? --TODO: Remodelar por CustomMachine--
 //Una maquina puede ser tanto un tilestate, una entidad, cualquier cosa que incluya un PDC
 //Una posible manera seria crear una clase IPersistible, que luego implementaria con 
 //IPersistibleBlock, IPersistibleEntity, cada una teniendo como parametro su TileState, Entity, etc
@@ -80,7 +82,9 @@ public abstract class Machine {
     public void onDisappear(IMachineData machineData) {
     	CustomItem itemDrop  = CustomItem.fromId(this.dropItemId);
     	
-    	machineData.getWorld().dropItemNaturally(machineData.getLocation(), itemDrop.buildItemStack());
+    	if(this.dropItemId != null) {
+        	machineData.getWorld().dropItemNaturally(machineData.getLocation(), itemDrop.buildItemStack());
+    	}
     }
 
     public static UUID getGuidFromMachine(IMachineData machineData) {

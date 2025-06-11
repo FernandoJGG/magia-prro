@@ -9,10 +9,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.magiaperro.items.base.CustomItem;
 import org.magiaperro.items.base.IClickable;
+import org.magiaperro.items.base.IConsumable;
 import org.magiaperro.machines.base.Machine;
 import org.magiaperro.machines.base.MachineBlock;
 import org.magiaperro.machines.base.MachineEntity;
@@ -71,6 +73,16 @@ public class OnPlayerInteractListener implements Listener {
     	       		event.setCancelled(true);
     	       	}
             }
+    	}
+    }
+    @EventHandler
+    public void onItemConsume(PlayerItemConsumeEvent event) {
+        ItemStack consumedItem = event.getItem();
+
+    	CustomItem customItem = CustomItem.fromItemStack(consumedItem);
+    	if (customItem != null && customItem instanceof IConsumable) {
+    		IConsumable consumable = (IConsumable) customItem; 
+    		consumable.onConsume(event);
     	}
     }
     

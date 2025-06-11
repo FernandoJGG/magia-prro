@@ -14,6 +14,7 @@ public class MachineRegistry {
     	CustomCrafter crafter = new CustomCrafter(MachineID.CustomCrafter);
     	CofreMagico cofreMagico = new CofreMagico(MachineID.CofreMagico);
     	AlloyFurnace horno = new AlloyFurnace(MachineID.AlloyFurnace);
+    	Brewery brewery = new Brewery(MachineID.Brewery);
     }
     
     public static void registerMachine(Machine machine) {
